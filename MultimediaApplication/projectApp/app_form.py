@@ -4,7 +4,28 @@ from .models import Information
 
 class LoactionForm(forms.Form):
     location = forms.ChoiceField(
-        label="Select the location",
         choices = [],
+        required= False,
         widget= forms.Select(attrs = {"class":"form-control"})
     )
+    node_id = forms.ChoiceField(
+        choices= [],
+        required= False,
+        widget= forms.Select(attrs= {"class":"form-control"})
+    )
+    begin_time = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        required= False,
+        input_formats=['%Y-%m-%dT%H:%M']
+    )
+    end_time = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        required= False,
+        input_formats=['%Y-%m-%dT%H:%M']
+    )
+
+    def reset(self):
+        for field in self.fields:
+            self.fields[field].initial = None
+        self.data = {}
+        self.is_bound = False
