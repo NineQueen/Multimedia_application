@@ -1,0 +1,133 @@
+<!doctype html>
+<HTML>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.mi
+n.css" rel="stylesheet" integrity="sha384-
+wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin=
+"anonymous">
+        <title>IC2140 IoT Dashboard</title>
+    </head>
+    <body>
+        <h1 class="display-3 p-3 mb-2 bg-danger text-white">IC2140 IoT Dashboard</h1>
+        <script src="https://cdn.flexmonster.com/flexmonster.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.flexmonster.com/theme/orange/flexmonster.min.css" />
+        <div id="pivot-container" ></div>
+        <script>
+            function processData(dataset) {
+                var result = []
+                dataset = JSON.parse(dataset);
+                dataset.forEach(item => result.push(item.fields));
+                return result;
+            }
+        </script>
+        <script>
+            $.ajax({
+                url: '/dashboard/temp_data',
+                dataType: 'json',
+                success: function(data) {
+                    new Flexmonster({
+                        container: "#pivot-container",
+                        componentFolder: "https://cdn.flexmonster.com/",
+                        //toolbar: true,
+                        report: {
+                            dataSource: {
+                                type: "json",
+                                data: processData(data),
+                                mapping: {
+                                    "node_id": { "caption": "ID" },
+                                    "loc": { "caption": "Location" },
+                                    "temp": { "caption": "Temperature", "type": "number" },
+                                    "hum": { "caption": "Humidity", "type": "number" },
+                                    "light": { "caption": "Light", "type": "number" },
+                                    "snd": { "caption": "Sound", "type": "number" },
+                                    "date_created": { "caption": "Created Date", "type": "datetime" }
+                                },
+                            },
+                            slice: {
+                                rows: [
+                                    { uniqueName : "date_created"},
+                                ],
+                                columns: [
+                                    { uniqueName : "loc"},
+                                    { uniqueName : "[measures]", label : "Temperature" },
+                                    { uniqueName : "[measures]", label : "Humidity" },
+                                    { uniqueName : "[measures]", label : "Light" },
+                                    { uniqueName : "[measures]", label : "Sound" },
+                                ],
+                                measures: [
+                                    {
+                                        uniqueName : "temp",
+                                        format : "degree",
+                                    },
+                                    {
+                                        uniqueName : "hum",
+                                        format : "percent",
+                                    },
+                                    {
+                                        uniqueName : "light",
+                                        format : "percent",
+                                    },
+                                    {
+                                        uniqueName : "snd",
+                                        format : "decibel",
+                                    },
+                                ]
+                            },
+                            formats: [
+                                {
+                                    name: "degree",
+                                    decimalPlaces: 1,
+                                },
+                                {
+                                    name: "percent",
+                                    decimalPlaces: 0,
+                                    suffix: "%"
+                                },
+                                {
+                                    name: "decibel",
+                                    decimalPlaces: 0,
+                                    suffix: "dB"
+                                },
+                            ],
+                            conditions: [
+                                {
+                                    formula: "#value < 25",
+                                    measure: "temp",
+                                    format: {
+                                        "color": "#FF0000"
+                                    }
+                                }
+                            ],
+                            options: {
+                                viewType: "charts",
+                                chart: {
+                                    type: "line",
+                                },
+                            },
+                        }
+                    });
+                }
+            });
+        </script>
+        <script>
+        function getFeed() {
+            $.ajax({
+                url: '/dashboard/temp_data',
+                dataType: 'json',
+                success: function(data) {
+                    flexmonster.updateData({
+                        data: processData(data)
+                    });
+                },
+                complete:function(data) {
+                    setTimeout(getFeed, 60000);
+                }
+            });
+        }
+        $(document).ready(function() {
+            setTimeout(getFeed, 60000); // 60 seconds
+        });
+        </script>
+    </body>
+</HTML>
