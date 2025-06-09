@@ -241,6 +241,55 @@
                 gap: 0.5rem;
             }
         }
+        .home-button {
+            position: absolute;
+            top: 1.5rem;
+            display: block;
+            left: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .home-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .sensor-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-container {
+                padding: 0 1rem;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            /* 移动设备上的返回按钮 */
+            .home-button {
+                top: 1rem;
+                left: 1rem;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -251,7 +300,9 @@
         </div>
         <p>Connecting to IoT sensors...</p>
     </div>
-    
+    <a href="/" class="home-button" title="Home">
+        <i class="fas fa-home"></i>
+    </a>
     <!-- Top Header -->
     <header class="dashboard-header">
         <div class="dashboard-container">

@@ -23,14 +23,14 @@ def get_series_data(input_node_id = None,input_loc = None,input_begin_time = Non
         if input_begin_time:
             data_selected = data_selected.filter(date_created__gte = input_begin_time)
         if input_end_time:
-            data_selected = data_selected.filter(data_created__lte = input_end_time)
+            data_selected = data_selected.filter(date_created__lte = input_end_time)
     except BaseException as e:
         print("Error at get_series_data()",e)
-        return
-    temp_result = data_selected.aggregate(avg = Round(Avg("temp", output_field=FloatField()), 2),max = Max("temp"),min = Min("temp"))
-    hum_result = data_selected.aggregate(avg = Round(Avg("hum", output_field=FloatField()), 2),max = Max("hum"),min = Min("hum"))
-    snd_result = data_selected.aggregate(avg = Round(Avg("snd", output_field=FloatField()),2),max = Max("snd"))
-    light_result = data_selected.aggregate(avg = Round(Avg("light", output_field=FloatField()),2),max = Max("light"))
+        return get_series_data()
+    temp_result = data_selected.aggregate(avg = Round(Avg("temp", output_field=FloatField())),max = Max("temp"),min = Min("temp"))
+    hum_result = data_selected.aggregate(avg = Round(Avg("hum", output_field=FloatField())),max = Max("hum"),min = Min("hum"))
+    snd_result = data_selected.aggregate(avg = Round(Avg("snd", output_field=FloatField())),max = Max("snd"))
+    light_result = data_selected.aggregate(avg = Round(Avg("light", output_field=FloatField())),max = Max("light"))
     cnt = data_selected.aggregate(Count("id"))
     #return pattern
     results = {
@@ -70,6 +70,7 @@ def select_data_list(request):
             # query the end time
             end_time = form.cleaned_data.get("end_time")
             context = get_series_data(select_node_id,select_location,begin_time,end_time)
+            print("check",context)
             context["form"] = form
             return render(request,"projectApp/select_data_list.html",context)
     else:

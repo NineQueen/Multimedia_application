@@ -38,7 +38,6 @@
             padding: 1.5rem 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
-            position: relative;
         }
         
         .dashboard-container {
@@ -228,7 +227,21 @@
             margin-bottom: 1rem;
         }
         
-        /* 返回主页按钮样式 */
+        @media (max-width: 768px) {
+            .sensor-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-container {
+                padding: 0 1rem;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
         .home-button {
             position: absolute;
             top: 1.5rem;
@@ -288,12 +301,10 @@
         </div>
         <p>Connecting to IoT sensors...</p>
     </div>
-    
-    <!-- 返回主页按钮 -->
+
     <a href="/" class="home-button" title="Home">
         <i class="fas fa-home"></i>
     </a>
-    
     <!-- Top Header -->
     <header class="dashboard-header">
         <div class="dashboard-container">
