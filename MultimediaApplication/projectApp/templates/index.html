@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classroom environment monitoring system</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #0c2461, #1e3799);
+        color: #fff;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        padding: 30px 0;
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+      }
+
+      .logo i {
+        font-size: 2.5rem;
+        margin-right: 15px;
+        color: #4bcffa;
+      }
+
+      h1 {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+        background: linear-gradient(90deg, #4bcffa, #0be881);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .card-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-size: 1.8rem;
+      }
+
+      .temp .card-icon {
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      }
+
+      .humidity .card-icon {
+        background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      }
+
+      .sound .card-icon {
+        background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+      }
+
+      .light .card-icon {
+        background: linear-gradient(135deg, #84fab0, #8fd3f4);
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .card-value {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin: 10px 0;
+        text-align: center;
+      }
+
+      .card-unit {
+        font-size: 1.2rem;
+        opacity: 0.8;
+        margin-left: 5px;
+      }
+
+      .card-status {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-top: 10px;
+        align-self: flex-start;
+      }
+
+      .status-normal {
+        background: rgba(46, 213, 115, 0.2);
+        color: #2ecc71;
+      }
+
+      .status-warning {
+        background: rgba(255, 165, 0, 0.2);
+        color: #ff9f1a;
+      }
+
+      .status-low {
+        color: #0066FF;
+        background: #99CCFF;
+      }
+
+      .card-description {
+        margin-top: 15px;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        opacity: 0.85;
+      }
+
+      .classroom-list {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 30px;
+      }
+
+      .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      .section-title i {
+        margin-right: 10px;
+        color: #4bcffa;
+      }
+
+      .classrooms {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+      }
+
+      .classroom-card {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .classroom-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .classroom-name {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .classroom-name i {
+        margin-right: 10px;
+        color: #4bcffa;
+      }
+
+      .classroom-metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .metric {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 70px;
+      }
+
+      .metric-value {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      .metric-label {
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+
+      footer {
+        text-align: center;
+        padding: 30px 0 20px;
+        margin-top: 40px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.2rem;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+        }
+
+        .dashboard {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          <i class="fas fa-chart-line"></i>
+          <h1>Environmental monitoring system</h1>
+        </div>
+        <p class="subtitle">
+          Monitor the temperature, humidity, sound and light intensity of each
+          classroom in real time to provide the best learning environment for
+          teachers and students
+        </p>
+      </header>
+      <a
+        href="dashboard/classroom"
+        style="text-decoration: none; color: inherit"
+      >
+        <div class="dashboard">
+          <div class="card temp">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-thermometer-half"></i>
+              </div>
+              <h2 class="card-title">Temperature Monitoring</h2>
+            </div>
+            <div class="card-value">
+              {{all.temp.avg}}<span class="card-unit">°C</span>
+            </div>
+            <span class="card-status status-normal temp-status"
+              >Normal Range</span
+            >
+            <p class="card-description">
+              Monitor the temperature conditions in each classroom to ensure a
+              comfortable learning range (20°C-26°C).
+            </p>
+          </div>
+
+          <div class="card humidity">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-tint"></i>
+              </div>
+              <h2 class="card-title">Humidity Monitoring</h2>
+            </div>
+            <div class="card-value">
+              {{all.hum.avg}}<span class="card-unit">%</span>
+            </div>
+            <span class="card-status status-normal hum-status"
+              >Ideal humidity</span
+            >
+            <p class="card-description">
+              Keep the humidity in the classroom between 40% and 60% to create
+              the best learning environment and prevent the air from being too
+              dry or too humid.
+            </p>
+          </div>
+
+          <div class="card sound">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-volume-up"></i>
+              </div>
+              <h2 class="card-title">Sound Monitoring</h2>
+            </div>
+            <div class="card-value">
+              {{all.snd.avg}}<span class="card-unit">dB</span>
+            </div>
+            <span class="card-status status-warning snd-status"
+              >Slightly Higher</span
+            >
+            <p class="card-description">
+              Monitor the noise level in the classroom environment. The ideal
+              learning environment should be below 60 decibels.
+            </p>
+          </div>
+
+          <div class="card light">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <h2 class="card-title">Light Monitoring</h2>
+            </div>
+            <div class="card-value">
+              {{all.light.max}}<span class="card-unit">%</span>
+            </div>
+            <span class="card-status status-normal light-status"
+              >Normal Range</span
+            >
+            <p class="card-description">
+              Make sure the lighting in the classroom is normal.
+            </p>
+          </div>
+        </div>
+      </a>
+      <div class="classroom-list">
+        <h2 class="section-title">
+          <i class="fas fa-school"></i>Classroom Environment Status
+        </h2>
+        <div class="classrooms">
+          {% for i in locs%}
+          <a
+            href="dashboard/classroom?loc={{i.loc}}"
+            style="text-decoration: none; color: inherit"
+          >
+            <div class="classroom-card">
+              <h3 class="classroom-name">
+                <i class="fas fa-chalkboard"></i>{{i.loc}}
+              </h3>
+              <div class="classroom-metrics">
+                <div class="metric">
+                  <div class="metric-value">{{i.temp}}°C</div>
+                  <div class="metric-label">Temp</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">{{i.hum}}%</div>
+                  <div class="metric-label">Humidity</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">{{i.snd}}dB</div>
+                  <div class="metric-label">Sound</div>
+                </div>
+                <div class="metric">
+                  <div class="metric-value">{{i.light}}</div>
+                  <div class="metric-label">Light</div>
+                </div>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <footer>
+        <p>Classroom environment monitoring system &copy; 2025 | Real-time data update | By Group A09</p>
+      </footer>
+    </div>
+
+    <script>
+      function updata_data(){
+       // Temperature
+           document.querySelectorAll('.temp-status').forEach(status => {
+               const all_temp = {{all.temp.avg}};
+               console.log({{all.temp.avg}});
+               if (all_temp>30) {
+                   status.className = 'card-status status-warning';
+                   status.textContent = 'Hot';
+               } else if(all_temp< 18){
+                   status.className = 'card-status status-low';
+                   status.textContent = 'Cold';
+               }else{
+                    status.className = 'card-status status-normal';
+                   status.textContent = 'Normal';
+               }
+           });
+           //Hum
+           document.querySelectorAll('.hum-status').forEach(status => {
+               const all_temp = {{all.hum.avg}};
+               if (all_temp>80) {
+                   status.className = 'card-status status-warning';
+                   status.textContent = 'High';
+               } else if(all_temp< 30){
+                   status.className = 'card-status status-low';
+                   status.textContent = 'Low';
+               }else{
+                    status.className = 'card-status status-normal';
+                   status.textContent = 'Optimal';
+               }
+           });
+           document.querySelectorAll('.snd-status').forEach(status => {
+               const all_temp = {{all.snd.avg}};
+               if (all_temp>70) {
+                   status.className = 'card-status status-warning';
+                   status.textContent = 'Loud';
+               } else if(all_temp< 50){
+                   status.className = 'card-status status-low';
+                   status.textContent = 'Quiet';
+               }else{
+                    status.className = 'card-status status-normal';
+                   status.textContent = 'Moderate';
+               }
+           });
+           document.querySelectorAll('.light-status').forEach(status => {
+               const all_temp = {{all.light.max}};
+               if (all_temp>90) {
+                   status.className = 'card-status status-warning';
+                   status.textContent = 'Bright';
+               } else if(all_temp< 30){
+                   status.className = 'card-status status-low';
+                   status.textContent = 'Off';
+               }else{
+                    status.className = 'card-status status-normal';
+                   status.textContent = 'Moderate';
+               }
+           });
+      }
+      updata_data();
+      window.onload = function(){
+           setTimeout(function(){
+               console.log("refresh")
+               location.reload();
+           },5000)
+      };
+       // 每10秒更新一次数据
+       //setInterval(updateData, 10000);
+    </script>
+  </body>
+</html>
