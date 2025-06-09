@@ -16,3 +16,16 @@ class Information(models.Model):
     
     class Meta:
         verbose_name_plural = "Information"
+
+class Event(models.Model):
+    name = models.CharField(max_length=8)
+    begin_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    loc = models.CharField(max_length=6)
+    Description = models.TextField()
+
+    def __str__(self):
+        return "Event #{}".format(self.id)
+    
+    class Meta:
+        verbose_name_plural = "Events"

@@ -46,7 +46,10 @@
         margin-right: 15px;
         color: #4bcffa;
       }
-
+      a {
+        text-decoration: none;
+        color: inherit
+      }
       h1 {
         font-size: 2.8rem;
         margin-bottom: 10px;
@@ -93,10 +96,11 @@
       .card-header {
         display: flex;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
       }
 
       .card-icon {
+        flex-shrink: 0;
         width: 60px;
         height: 60px;
         border-radius: 50%;
@@ -123,6 +127,15 @@
         background: linear-gradient(135deg, #84fab0, #8fd3f4);
       }
 
+      .addEvent .card-icon {
+        background: linear-gradient(135deg, #f6d365, #fda085);
+      }
+      .dataList .card-icon {
+        background: linear-gradient(135deg, #e0c3fc, #b5b6fb);
+      }
+      .dataMonitor .card-icon {
+        background: linear-gradient(135deg, #ffecd2, #fcb69f);
+      }
       .card-title {
         font-size: 1.5rem;
         font-weight: 600;
@@ -162,8 +175,8 @@
       }
 
       .status-low {
-        color: #0066FF;
-        background: #99CCFF;
+        color: #0066ff;
+        background: #99ccff;
       }
 
       .card-description {
@@ -182,7 +195,6 @@
         border: 1px solid rgba(255, 255, 255, 0.1);
         margin-top: 30px;
       }
-
       .section-title {
         font-size: 1.8rem;
         margin-bottom: 20px;
@@ -270,6 +282,9 @@
           grid-template-columns: 1fr;
         }
       }
+      .toolbar {
+        justify-content: center;
+      }
     </style>
   </head>
   <body>
@@ -285,17 +300,53 @@
           teachers and students
         </p>
       </header>
-      <a
-        href="dashboard/classroom"
-        style="text-decoration: none; color: inherit"
-      >
+      <div class="dashboard">
+        <a href="addevent">
+        <div class="card addEvent toolbar">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <h2 class="card-title">Reserve Classroom</h2>
+          </div>
+        </div>
+        </a>
+        <a href="selectdata">
+        <div class="card dataList toolbar">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fa-solid fa-database"></i>
+            </div>
+            <h2 class="card-title">Data List</h2>
+          </div>
+        </div>
+        </a>
+        <div class="card dataMonitor toolbar">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h2 class="card-title">Data Warning</h2>
+          </div>
+        </div>
+
+        <div class="card temp toolbar">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h2 class="card-title">Temper Monitoring</h2>
+          </div>
+        </div>
+      </div>
+      <a href="dashboard/classroom">
         <div class="dashboard">
           <div class="card temp">
             <div class="card-header">
               <div class="card-icon">
                 <i class="fas fa-thermometer-half"></i>
               </div>
-              <h2 class="card-title">Temper Monitoring</h2>
+              <h2 class="card-title">Temperature Monitoring</h2>
             </div>
             <div class="card-value">
               {{all.temp.avg}}<span class="card-unit">°C</span>
@@ -406,7 +457,10 @@
       </div>
 
       <footer>
-        <p>Classroom environment monitoring system &copy; 2025 | Real-time data update | By Group A09</p>
+        <p>
+          Classroom environment monitoring system &copy; 2025 | Real-time data
+          update | By Group A09
+        </p>
       </footer>
     </div>
 
@@ -475,8 +529,6 @@
                location.reload();
            },5000)
       };
-       // 每10秒更新一次数据
-       //setInterval(updateData, 10000);
     </script>
   </body>
 </html>

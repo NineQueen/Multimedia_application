@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
-from .models import Information
+from .models import Information,Event
 from django.urls import path
-from .app_form import LocationForm
+from .app_form import LocationForm,EventForm
 from django.db.models import Avg,Max,Min,Count,FloatField
 from django.db.models.functions import Round
 #from . import mqtt_iot
@@ -85,6 +85,47 @@ def select_data_list(request):
     context["form"] = form
     return render(request,"projectApp/select_data_list.html",context)
 
+def check_valid(loc,begin_time,end_time):
+    events = Event.objects.filter(loc = loc)
+    print(events)
+    events = Event.objects.filter(begin_time__lte = end_time)
+    print(events)
+    events = Event.objects.filter(end_time__gte = begin_time)
+    if len(events) > 0:
+        return False
+    return True
+
+def add_event(request):
+    #Event.objects.all().delete()
+    events = Event.objects.all()
+    context = {"events":events}
+    context["type"] = "success"
+    if request.method == "POST":
+        try:
+            form = EventForm(request.POST)
+            if form.is_valid():
+                loc = form.cleaned_data.get("loc")
+                begin_time = form.cleaned_data.get("begin_time")
+                end_time = form.cleaned_data.get("end_time")
+                if begin_time>=end_time:
+                    raise AssertionError("Error! The start time must be earlier than the end time!")
+                if not check_valid(loc,begin_time,end_time):
+                    raise AssertionError("Error! The classroom has been occupied!")
+                event = form.save()
+                return redirect(request.path)
+        except Exception as e:
+            print(e)
+            form = EventForm()
+            context["type"] = "fail"
+            context["error_message"] = e
+    else:
+        form = EventForm()
+        if "clear" in request.GET:
+            form.reset()
+            return redirect(request.path)
+    context["form"] = form
+    return render(request,"projectApp/add_event.html",context)
+            
 def navigation_page(request):
     all_result = get_series_data()
     location = Information.objects.values_list("loc").distinct()

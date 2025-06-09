@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Information
+from .models import Information,Event
 
 class LocationForm(forms.Form):
     location = forms.ChoiceField(
@@ -24,6 +24,64 @@ class LocationForm(forms.Form):
         input_formats=['%Y-%m-%dT%H:%M']
     )
 
+    def reset(self):
+        for field in self.fields:
+            self.fields[field].initial = None
+        self.data = {}
+        self.is_bound = False
+
+from django import forms
+from .models import Event
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['begin_time', 'end_time', 'loc', 'Description',"name"]
+        
+        # 自定义表单字段的小部件和标签
+        widgets = {
+            'begin_time': forms.DateTimeInput(
+                attrs={
+                    'type': 'datetime-local',
+                    'class': 'form-control',
+                }
+            ),
+            'end_time': forms.DateTimeInput(
+                attrs={
+                    'type': 'datetime-local',
+                    'class': 'form-control',
+                }
+            ),
+            'loc': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'maxlength': 6,
+                }
+            ),
+            'Description': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 4,
+                }
+            ),
+            'name': forms.DateTimeInput(
+                attrs={
+                    'class': 'form-control',
+                    "maxlength":8
+                }
+            ),
+        }
+        
+        labels = {
+            "begin_time":"Begin Time",
+            "end_time":"End Time",
+            'loc': 'Location',
+            'Description': 'Event Description',
+        }
+        input_formats = {
+            "begin_time":['%Y-%m-%dT%H:%M'],
+            "end_time":['%Y-%m-%dT%H:%M'],
+        }
     def reset(self):
         for field in self.fields:
             self.fields[field].initial = None
