@@ -425,30 +425,41 @@
         <div class="classrooms">
           {% for i in locs%}
           <a
-            href="dashboard/classroom?loc={{i.loc}}"
+            href="dashboard/classroom?loc={{i.env.loc}}"
             style="text-decoration: none; color: inherit"
           >
             <div class="classroom-card">
               <h3 class="classroom-name">
-                <i class="fas fa-chalkboard"></i>{{i.loc}}
+                <i class="fas fa-chalkboard"></i>{{i.env.loc}}
               </h3>
-              <div class="classroom-metrics">
-                <div class="metric">
-                  <div class="metric-value">{{i.temp}}°C</div>
+              <div class="classroom-metrics" >
+                <div class="metric" style="margin: auto;">
+                  <div class="metric-value">{{i.env.temp}}°C</div>
                   <div class="metric-label">Temp</div>
                 </div>
-                <div class="metric">
-                  <div class="metric-value">{{i.hum}}%</div>
+                <div class="metric" style="margin: auto;">
+                  <div class="metric-value">{{i.env.hum}}%</div>
                   <div class="metric-label">Humidity</div>
                 </div>
-                <div class="metric">
-                  <div class="metric-value">{{i.snd}}dB</div>
+                <div class="metric " style="margin: auto;">
+                  <div class="metric-value">{{i.env.snd}}dB</div>
                   <div class="metric-label">Sound</div>
                 </div>
-                <div class="metric">
-                  <div class="metric-value">{{i.light}}</div>
+                <div class="metric" style="margin: auto;">
+                  <div class="metric-value">{{i.env.light}}</div>
                   <div class="metric-label">Light</div>
                 </div>
+                {% if i.empty == True %}
+                <div class="metric" style="margin: auto;">
+                  <div class="metric-value" style="color: rgb(120, 228, 120); font-size: 15px;">Empty</div>
+                  <div class="metric-label">Status</div>
+                </div>
+                {% else %}
+                <div class="metric" style="margin:auto;">
+                  <div class="metric-value" style="color: rgb(231, 97, 97); font-size: 17px;">{{i.detail.name}}</div>
+                  <div class="metric-label">Status</div>
+                </div>
+                {% endif %}
               </div>
             </div>
           </a>

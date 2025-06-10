@@ -6,19 +6,21 @@ ID = "A09"
 mqtt_broker = "ia.ic.polyu.edu.hk"
 mqtt_port = 1883
 mqtt_qos = 1
-mqtt_topic = "iot/sensor-A09"
+mqtt_topic = "iot/sensor-A"
 def mqtt_on_message(client, userdata,msg):
     try:
         d_msg = str(msg.payload.decode("utf-8"))
         iotData = json.loads(d_msg)
         print("Received message on topic %s : %s" % (msg.topic, iotData))
+        if float(iotData["hum"])  < 0 or float(iotData["light"]) < 0:
+            raise AssertionError("Smaller than 0!")
         p = Information(
             node_id = iotData["node_id"],
             loc = iotData["loc"].upper(),
-            temp = iotData["temp"],
-            hum = iotData["hum"],
-            light = iotData["light"],
-            snd = iotData["snd"]
+            temp = float(iotData["temp"]),
+            hum = float(iotData["hum"]),
+            light = int(iotData["light"]),
+            snd = int(iotData["snd"])+80
             )
         print("check")
         p.save()

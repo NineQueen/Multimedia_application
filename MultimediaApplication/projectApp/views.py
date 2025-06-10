@@ -4,7 +4,8 @@ from django.urls import path
 from .app_form import LocationForm,EventForm
 from django.db.models import Avg,Max,Min,Count,FloatField
 from django.db.models.functions import Round
-#from . import mqtt_iot
+from django.utils import timezone
+from . import mqtt_iot
 # Create your views here.
 def tot_data_list(request):
     data_collected = Information.objects.all()
@@ -45,10 +46,10 @@ def get_series_data(input_node_id = None,input_loc = None,input_begin_time = Non
 
 
 def select_data_list(request):
-    location = Information.objects.values_list("loc").distinct()
+    location = Information.objects.values_list("loc").distinct().order_by("loc")
     locations = []
     locations.append((None,"All"))
-    node_id = Information.objects.values_list("node_id").distinct()
+    node_id = Information.objects.values_list("node_id").distinct().order_by("node_id")
     node_id_list = []
     node_id_list.append((None,"All"))
     data_selected = Information.objects.all()
@@ -71,6 +72,7 @@ def select_data_list(request):
             end_time = form.cleaned_data.get("end_time")
             context = get_series_data(select_node_id,select_location,begin_time,end_time)
             print("check",context)
+            context["raw_data"] = context["raw_data"].order_by("-date_created")
             context["form"] = form
             return render(request,"projectApp/select_data_list.html",context)
     else:
@@ -82,35 +84,45 @@ def select_data_list(request):
         form.fields["location"].choices = locations
         form.fields["node_id"].choices = node_id_list
     context = get_series_data()
+    context["raw_data"] = context["raw_data"].order_by("-date_created")
     context["form"] = form
     return render(request,"projectApp/select_data_list.html",context)
 
 def check_valid(loc,begin_time,end_time):
     events = Event.objects.filter(loc = loc)
     print(events)
-    events = Event.objects.filter(begin_time__lte = end_time)
+    events = events.filter(begin_time__lte = end_time)
     print(events)
-    events = Event.objects.filter(end_time__gte = begin_time)
+    events = events.filter(end_time__gte = begin_time)
     if len(events) > 0:
         return False
     return True
 
 def add_event(request):
     #Event.objects.all().delete()
+    location = Information.objects.values_list("loc").distinct().order_by("loc")
+    locations = []
+    locations.append((None,"--"))
+    for i in location:
+        locations.append((i[0],i[0]))
     events = Event.objects.all()
     context = {"events":events}
     context["type"] = "success"
     if request.method == "POST":
         try:
             form = EventForm(request.POST)
+            form.fields['loc'].choices = locations
             if form.is_valid():
-                loc = form.cleaned_data.get("loc")
+                loc = form.cleaned_data['loc']
+                print("loc",loc)
                 begin_time = form.cleaned_data.get("begin_time")
                 end_time = form.cleaned_data.get("end_time")
                 if begin_time>=end_time:
                     raise AssertionError("Error! The start time must be earlier than the end time!")
                 if not check_valid(loc,begin_time,end_time):
                     raise AssertionError("Error! The classroom has been occupied!")
+                event = form.save(commit=False)
+                event.loc = loc
                 event = form.save()
                 return redirect(request.path)
         except Exception as e:
@@ -123,16 +135,37 @@ def add_event(request):
         if "clear" in request.GET:
             form.reset()
             return redirect(request.path)
+    form.fields['loc'].choices = locations
+    print(form.fields['loc'].choices)
+    print("check")
     context["form"] = form
     return render(request,"projectApp/add_event.html",context)
-            
+
+def check_empty(loc,time):
+    event = Event.objects.filter(loc = loc)
+    event = event.filter(begin_time__lte = time)
+    event = event.filter(end_time__gte = time)
+    return event
+
 def navigation_page(request):
     all_result = get_series_data()
-    location = Information.objects.values_list("loc").distinct()
+    location = Information.objects.values_list("loc").distinct().order_by("loc")
     print(location)
     locations = []
     for i in location:
-        locations.append(Information.objects.filter(loc = i[0]).order_by("-date_created")[0])
+        time = timezone.now()
+        event = check_empty(i[0],time)
+        empty = False
+        if len(event) == 0:
+            empty = True
+        context = {
+            "env" : Information.objects.filter(loc = i[0]).order_by("-date_created")[0],
+            "empty": empty,
+        }
+        if not empty:
+            context["detail"] = event[0]
+            print(event[0])
+        locations.append(context)
     print(locations)
     context = {"all":all_result,"locs":locations}
     return render(request,"index.html",context)

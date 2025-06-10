@@ -14,12 +14,12 @@ class LocationForm(forms.Form):
         widget= forms.Select(attrs= {"class":"form-control"})
     )
     begin_time = forms.DateTimeField(
-        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local',"class":"form-control"}),
         required= False,
         input_formats=['%Y-%m-%dT%H:%M']
     )
     end_time = forms.DateTimeField(
-        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local',"class":"form-control"}),
         required= False,
         input_formats=['%Y-%m-%dT%H:%M']
     )
@@ -33,12 +33,17 @@ class LocationForm(forms.Form):
 from django import forms
 from .models import Event
 
+
 class EventForm(forms.ModelForm):
+    loc = forms.ChoiceField(
+        choices= [],
+        widget= forms.Select(attrs= {"class":"form-control"}),
+        label="Location"
+    )
     class Meta:
         model = Event
-        fields = ['begin_time', 'end_time', 'loc', 'Description',"name"]
-        
-        # ×Ô¶¨Òå±íµ¥×Ö¶ÎµÄÐ¡²¿¼þºÍ±êÇ©
+        fields = ['begin_time', 'end_time', 'Description',"name"]
+        # ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¶Îµï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½Í±ï¿½Ç©
         widgets = {
             'begin_time': forms.DateTimeInput(
                 attrs={
@@ -50,12 +55,6 @@ class EventForm(forms.ModelForm):
                 attrs={
                     'type': 'datetime-local',
                     'class': 'form-control',
-                }
-            ),
-            'loc': forms.TextInput(
-                attrs={
-                    'class': 'form-control',
-                    'maxlength': 6,
                 }
             ),
             'Description': forms.Textarea(
@@ -71,11 +70,9 @@ class EventForm(forms.ModelForm):
                 }
             ),
         }
-        
         labels = {
             "begin_time":"Begin Time",
             "end_time":"End Time",
-            'loc': 'Location',
             'Description': 'Event Description',
         }
         input_formats = {
