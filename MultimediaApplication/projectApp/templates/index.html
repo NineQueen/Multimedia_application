@@ -1,14 +1,21 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
+    <link rel="icon" href="{% static 'navi_icon.ico' %}" type="image/x-icon">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
     <title>Classroom environment monitoring system</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
       * {
         margin: 0;
         padding: 0;
@@ -48,7 +55,7 @@
       }
       a {
         text-decoration: none;
-        color: inherit
+        color: inherit;
       }
       h1 {
         font-size: 2.8rem;
@@ -155,7 +162,8 @@
       }
 
       .card-status {
-        display: inline-block;
+        display: flex;
+        align-items: center;
         padding: 5px 15px;
         border-radius: 20px;
         font-size: 0.9rem;
@@ -165,13 +173,13 @@
       }
 
       .status-normal {
-        background: rgba(46, 213, 115, 0.2);
-        color: #2ecc71;
+        background: rgba(161, 221, 185, 0.938);
+        color: #1e8548;
       }
 
       .status-warning {
-        background: rgba(255, 165, 0, 0.2);
-        color: #ff9f1a;
+        background: rgb(204, 138, 119);
+        color: #79311f;
       }
 
       .status-low {
@@ -301,35 +309,36 @@
         </p>
       </header>
       <div class="dashboard">
-        <a href="addevent">
-        <div class="card addEvent toolbar">
-          <div class="card-header">
-            <div class="card-icon">
-              <i class="fa-solid fa-calendar-days"></i>
+        <a href="eventlist">
+          <div class="card addEvent toolbar">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fa-solid fa-calendar-days"></i>
+              </div>
+              <h2 class="card-title">Reserve Classroom</h2>
             </div>
-            <h2 class="card-title">Reserve Classroom</h2>
           </div>
-        </div>
         </a>
         <a href="selectdata">
-        <div class="card dataList toolbar">
-          <div class="card-header">
-            <div class="card-icon">
-              <i class="fa-solid fa-database"></i>
+          <div class="card dataList toolbar">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fa-solid fa-database"></i>
+              </div>
+              <h2 class="card-title">Data List</h2>
             </div>
-            <h2 class="card-title">Data List</h2>
           </div>
-        </div>
         </a>
-        <div class="card dataMonitor toolbar">
-          <div class="card-header">
-            <div class="card-icon">
-              <i class="fa-solid fa-triangle-exclamation"></i>
+        <a href="monitor">
+          <div class="card dataMonitor toolbar">
+            <div class="card-header">
+              <div class="card-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <h2 class="card-title">Data Warning</h2>
             </div>
-            <h2 class="card-title">Data Warning</h2>
           </div>
-        </div>
-
+        </a>
         <div class="card temp toolbar">
           <div class="card-header">
             <div class="card-icon">
@@ -349,7 +358,7 @@
               <h2 class="card-title">Temperature Monitoring</h2>
             </div>
             <div class="card-value">
-              {{all.temp.avg}}<span class="card-unit">°C</span>
+              {{all.temp}}<span class="card-unit">°C</span>
             </div>
             <span class="card-status status-normal temp-status"
               >Normal Range</span
@@ -368,7 +377,7 @@
               <h2 class="card-title">Humidity Monitoring</h2>
             </div>
             <div class="card-value">
-              {{all.hum.avg}}<span class="card-unit">%</span>
+              {{all.hum}}<span class="card-unit">%</span>
             </div>
             <span class="card-status status-normal hum-status"
               >Ideal humidity</span
@@ -388,7 +397,7 @@
               <h2 class="card-title">Sound Monitoring</h2>
             </div>
             <div class="card-value">
-              {{all.snd.avg}}<span class="card-unit">dB</span>
+              {{all.snd}}<span class="card-unit">dB</span>
             </div>
             <span class="card-status status-warning snd-status"
               >Slightly Higher</span
@@ -407,7 +416,7 @@
               <h2 class="card-title">Light Monitoring</h2>
             </div>
             <div class="card-value">
-              {{all.light.max}}<span class="card-unit">%</span>
+              {{all.light}}<span class="card-unit">%</span>
             </div>
             <span class="card-status status-normal light-status"
               >Normal Range</span
@@ -424,45 +433,60 @@
         </h2>
         <div class="classrooms">
           {% for i in locs%}
-          <a
-            href="dashboard/classroom?loc={{i.env.loc}}"
-            style="text-decoration: none; color: inherit"
-          >
-            <div class="classroom-card">
-              <h3 class="classroom-name">
-                <i class="fas fa-chalkboard"></i>{{i.env.loc}}
-              </h3>
-              <div class="classroom-metrics" >
-                <div class="metric" style="margin: auto;">
-                  <div class="metric-value">{{i.env.temp}}°C</div>
-                  <div class="metric-label">Temp</div>
+          <div class="classroom-card" data-loc="{{i.env.loc}}" style="margin: auto; cursor: pointer">
+            <h3 class="classroom-name">
+              <i class="fas fa-chalkboard"></i>{{i.env.loc}}
+            </h3>
+            <div class="classroom-metrics">
+              <div class="metric" style="margin: auto">
+                <div class="metric-value">{{i.env.temp}}°C</div>
+                <div class="metric-label">Temp</div>
+              </div>
+              <div class="metric" style="margin: auto">
+                <div class="metric-value">{{i.env.hum}}%</div>
+                <div class="metric-label">Humidity</div>
+              </div>
+              <div class="metric" style="margin: auto">
+                <div class="metric-value">{{i.env.snd}}dB</div>
+                <div class="metric-label">Sound</div>
+              </div>
+              <div class="metric" style="margin: auto">
+                <div class="metric-value">{{i.env.light}}</div>
+                <div class="metric-label">Light</div>
+              </div>
+              {% if i.empty == True %}
+              <div class="metric" style="margin: auto">
+                <div
+                  class="metric-value"
+                  style="color: rgb(120, 228, 120); font-size: 15px"
+                >
+                  Empty
                 </div>
-                <div class="metric" style="margin: auto;">
-                  <div class="metric-value">{{i.env.hum}}%</div>
-                  <div class="metric-label">Humidity</div>
+                <div class="metric-label">Status</div>
+              </div>
+              {% else %}
+              <div
+                class="metric clickable-row"
+                style="margin: auto; cursor: pointer"
+                data-id="{{ i.detail.id }}"
+              >
+                <div
+                  class="metric-value"
+                  style="color: rgb(231, 97, 97); font-size: 17px"
+                >
+                  {{i.detail.name}}
                 </div>
-                <div class="metric " style="margin: auto;">
-                  <div class="metric-value">{{i.env.snd}}dB</div>
-                  <div class="metric-label">Sound</div>
+                <div class="metric-label">Status</div>
+              </div>
+              {% endif %}
+              <div class="metric" style="margin: auto">
+                <div class="metric-value" style="font-size: 14px">
+                  {{i.env.date_created | date:"m-d H:i"}}
                 </div>
-                <div class="metric" style="margin: auto;">
-                  <div class="metric-value">{{i.env.light}}</div>
-                  <div class="metric-label">Light</div>
-                </div>
-                {% if i.empty == True %}
-                <div class="metric" style="margin: auto;">
-                  <div class="metric-value" style="color: rgb(120, 228, 120); font-size: 15px;">Empty</div>
-                  <div class="metric-label">Status</div>
-                </div>
-                {% else %}
-                <div class="metric" style="margin:auto;">
-                  <div class="metric-value" style="color: rgb(231, 97, 97); font-size: 17px;">{{i.detail.name}}</div>
-                  <div class="metric-label">Status</div>
-                </div>
-                {% endif %}
+                <div class="metric-label">Update</div>
               </div>
             </div>
-          </a>
+          </div>
           {% endfor %}
         </div>
       </div>
@@ -476,70 +500,88 @@
     </div>
 
     <script>
-      function updata_data(){
-       // Temperature
-           document.querySelectorAll('.temp-status').forEach(status => {
-               const all_temp = {{all.temp.avg}};
-               console.log({{all.temp.avg}});
-               if (all_temp>30) {
-                   status.className = 'card-status status-warning';
-                   status.textContent = 'Hot';
-               } else if(all_temp< 18){
-                   status.className = 'card-status status-low';
-                   status.textContent = 'Cold';
-               }else{
-                    status.className = 'card-status status-normal';
-                   status.textContent = 'Normal';
-               }
-           });
-           //Hum
-           document.querySelectorAll('.hum-status').forEach(status => {
-               const all_temp = {{all.hum.avg}};
-               if (all_temp>80) {
-                   status.className = 'card-status status-warning';
-                   status.textContent = 'High';
-               } else if(all_temp< 30){
-                   status.className = 'card-status status-low';
-                   status.textContent = 'Low';
-               }else{
-                    status.className = 'card-status status-normal';
-                   status.textContent = 'Optimal';
-               }
-           });
-           document.querySelectorAll('.snd-status').forEach(status => {
-               const all_temp = {{all.snd.avg}};
-               if (all_temp>70) {
-                   status.className = 'card-status status-warning';
-                   status.textContent = 'Loud';
-               } else if(all_temp< 50){
-                   status.className = 'card-status status-low';
-                   status.textContent = 'Quiet';
-               }else{
-                    status.className = 'card-status status-normal';
-                   status.textContent = 'Moderate';
-               }
-           });
-           document.querySelectorAll('.light-status').forEach(status => {
-               const all_temp = {{all.light.max}};
-               if (all_temp>90) {
-                   status.className = 'card-status status-warning';
-                   status.textContent = 'Bright';
-               } else if(all_temp< 30){
-                   status.className = 'card-status status-low';
-                   status.textContent = 'Off';
-               }else{
-                    status.className = 'card-status status-normal';
-                   status.textContent = 'Moderate';
-               }
-           });
-      }
-      updata_data();
-      window.onload = function(){
-           setTimeout(function(){
-               console.log("refresh")
-               location.reload();
-           },5000)
-      };
-    </script>
-  </body>
+        document.addEventListener('DOMContentLoaded', function() {
+          document.querySelectorAll('.classroom-card').forEach(card => {
+              card.addEventListener('click', () => {
+              const loc = card.dataset.loc;
+            window.location.href = `dashboard/classroom?loc=${loc}`;
+          });
+        });
+            document.querySelectorAll('.clickable-row').forEach(div => {
+                div.addEventListener('click', function(event) {
+                    console.log("check");
+                    event.stopPropagation(); // 阻止冒泡
+                    const eventId = this.getAttribute('data-id');
+                    if (eventId) {
+                        window.location.href = `/eventlist?id=${eventId}`;
+                    }
+                });
+            });
+        });
+              function updata_data(){
+               // Temperature
+                   document.querySelectorAll('.temp-status').forEach(status => {
+                       const all_temp = {{all.temp}};
+                       console.log({{all.temp}});
+                       if (all_temp>30) {
+                           status.className = 'card-status status-warning';
+                           status.textContent = 'Hot';
+                       } else if(all_temp< 18){
+                           status.className = 'card-status status-low';
+                           status.textContent = 'Cold';
+                       }else{
+                            status.className = 'card-status status-normal';
+                           status.textContent = 'Normal';
+                       }
+                   });
+                   //Hum
+                   document.querySelectorAll('.hum-status').forEach(status => {
+                       const all_temp = {{all.hum}};
+                       if (all_temp>80) {
+                           status.className = 'card-status status-warning';
+                           status.textContent = 'High';
+                       } else if(all_temp< 30){
+                           status.className = 'card-status status-low';
+                           status.textContent = 'Low';
+                       }else{
+                            status.className = 'card-status status-normal';
+                           status.textContent = 'Optimal';
+                       }
+                   });
+                   document.querySelectorAll('.snd-status').forEach(status => {
+                       const all_temp = {{all.snd}};
+                       if (all_temp>70) {
+                           status.className = 'card-status status-warning';
+                           status.textContent = 'Loud';
+                       } else if(all_temp< 50){
+                           status.className = 'card-status status-low';
+                           status.textContent = 'Quiet';
+                       }else{
+                            status.className = 'card-status status-normal';
+                           status.textContent = 'Moderate';
+                       }
+                   });
+                   document.querySelectorAll('.light-status').forEach(status => {
+                       const all_temp = {{all.light}};
+                       if (all_temp>90) {
+                           status.className = 'card-status status-warning';
+                           status.textContent = 'Bright';
+                       } else if(all_temp< 30){
+                           status.className = 'card-status status-low';
+                           status.textContent = 'Off';
+                       }else{
+                            status.className = 'card-status status-normal';
+                           status.textContent = 'Moderate';
+                       }
+                   });
+              }
+              updata_data();
+              window.onload = function(){
+                   setTimeout(function(){
+                       console.log("refresh")
+                       location.reload();
+                   },5000)
+              };
+            </script>
+        </body>
 </html>

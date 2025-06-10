@@ -10,7 +10,6 @@ from . import mqtt_iot
 def tot_data_list(request):
     data_collected = Information.objects.all()
     context = {"tot_data":data_collected}
-    print(context["tot_data"])
     return render(request,"projectApp/tot_data_list.html",context)
 
 #Return the series data's average 
@@ -71,7 +70,6 @@ def select_data_list(request):
             # query the end time
             end_time = form.cleaned_data.get("end_time")
             context = get_series_data(select_node_id,select_location,begin_time,end_time)
-            print("check",context)
             context["raw_data"] = context["raw_data"].order_by("-date_created")
             context["form"] = form
             return render(request,"projectApp/select_data_list.html",context)
@@ -90,9 +88,7 @@ def select_data_list(request):
 
 def check_valid(loc,begin_time,end_time):
     events = Event.objects.filter(loc = loc)
-    print(events)
     events = events.filter(begin_time__lte = end_time)
-    print(events)
     events = events.filter(end_time__gte = begin_time)
     if len(events) > 0:
         return False
@@ -107,6 +103,13 @@ def add_event(request):
         locations.append((i[0],i[0]))
     events = Event.objects.all()
     context = {"events":events}
+    if "id" in request.GET:
+        try:
+            event_id = Event.objects.filter(id = int(request.GET["id"]))[0]
+            context["id"] = event_id
+            return render(request,"projectApp/event_list.html",context)
+        except Exception as e:
+            print(e)
     context["type"] = "success"
     if request.method == "POST":
         try:
@@ -114,7 +117,6 @@ def add_event(request):
             form.fields['loc'].choices = locations
             if form.is_valid():
                 loc = form.cleaned_data['loc']
-                print("loc",loc)
                 begin_time = form.cleaned_data.get("begin_time")
                 end_time = form.cleaned_data.get("end_time")
                 if begin_time>=end_time:
@@ -136,8 +138,6 @@ def add_event(request):
             form.reset()
             return redirect(request.path)
     form.fields['loc'].choices = locations
-    print(form.fields['loc'].choices)
-    print("check")
     context["form"] = form
     return render(request,"projectApp/add_event.html",context)
 
@@ -150,7 +150,6 @@ def check_empty(loc,time):
 def navigation_page(request):
     all_result = get_series_data()
     location = Information.objects.values_list("loc").distinct().order_by("loc")
-    print(location)
     locations = []
     for i in location:
         time = timezone.now()
@@ -164,8 +163,35 @@ def navigation_page(request):
         }
         if not empty:
             context["detail"] = event[0]
-            print(event[0])
         locations.append(context)
-    print(locations)
+    tot_temp = 0
+    tot_hum = 0
+    tot_snd = 0
+    tot_light = 0
+    for i in locations:
+        tot_light += i["env"].light
+        tot_snd += i["env"].snd
+        tot_hum += i["env"].hum
+        tot_temp += i["env"].temp
+    tot_light /= len(locations)
+    tot_snd /= len(locations)
+    tot_hum /= len(locations)
+    tot_temp /= len(locations)
+    tot_light = "{:.2f}".format(tot_light)
+    tot_snd = "{:.2f}".format(tot_snd)
+    tot_temp = "{:.2f}".format(tot_temp)
+    tot_hum = "{:.2f}".format(tot_hum)
+    all_result = {
+        "temp" : tot_temp,
+        "hum":tot_hum,
+        "light":tot_light,
+        "snd" : tot_snd,
+    }
     context = {"all":all_result,"locs":locations}
     return render(request,"index.html",context)
+
+def environmental_monitoring_v3(request):
+    data = Information.objects.all().order_by('-date_created')
+    return render(request, 'projectApp/env-monitor-v3.html', {
+        'data': data
+    })

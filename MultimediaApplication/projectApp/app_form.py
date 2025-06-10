@@ -30,9 +30,6 @@ class LocationForm(forms.Form):
         self.data = {}
         self.is_bound = False
 
-from django import forms
-from .models import Event
-
 
 class EventForm(forms.ModelForm):
     loc = forms.ChoiceField(
