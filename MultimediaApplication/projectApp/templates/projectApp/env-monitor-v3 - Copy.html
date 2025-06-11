@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Environmental Data Monitoring & Alert System - Combined</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                        dark: '#1e293b',
+                        light: '#f8fafc'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-shadow {
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+            .alert-pulse {
+                animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            @keyframes pulse {
+                0%, 100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.5;
+                }
+            }
+            .threshold-input {
+                @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50;
+            }
+            .scrollable-table {
+                max-height: calc(10 * (1rem + 1rem + 0.5rem)); /* 10行的高度 */
+            }
+            .scrollable-alert {
+                max-height: calc(6 * (1rem + 1rem + 0.5rem)); /* 6行的高度 */
+            }
+            .alert-row {
+                background-color: rgba(255, 200, 200, 0.3); /* 浅红色背景 */
+            }
+        }
+    </style>
+</head>
+
+<body class="font-inter bg-gray-50 text-dark min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- 标题区域 -->
+        <header class="mb-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div>
+                    <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark">
+                        Environmental Data Monitoring & Alert System
+                    </h1>
+                    <p class="text-gray-600 mt-2">Real-time monitoring of environmental parameters with intelligent alerting</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- 阈值设置卡片 -->
+        <div class="bg-white rounded-xl p-6 mb-8 card-shadow">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fa fa-sliders text-primary mr-2"></i> Alert Threshold Settings
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-medium text-gray-700 mb-3">Temperature Thresholds</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <label for="highTempThreshold" class="w-32 text-sm font-medium text-gray-700">High Temperature (°C):</label>
+                            <input type="number" id="highTempThreshold" placeholder="High threshold" class="threshold-input flex-1">
+                        </div>
+                        <div class="flex items-center">
+                            <label for="lowTempThreshold" class="w-32 text-sm font-medium text-gray-700">Low Temperature (°C):</label>
+                            <input type="number" id="lowTempThreshold" placeholder="Low threshold" class="threshold-input flex-1">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-medium text-gray-700 mb-3">Humidity Thresholds</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <label for="highHumidityThreshold" class="w-32 text-sm font-medium text-gray-700">High Humidity (%):</label>
+                            <input type="number" id="highHumidityThreshold" placeholder="High threshold" class="threshold-input flex-1">
+                        </div>
+                        <div class="flex items-center">
+                            <label for="lowHumidityThreshold" class="w-32 text-sm font-medium text-gray-700">Low Humidity (%):</label>
+                            <input type="number" id="lowHumidityThreshold" placeholder="Low threshold" class="threshold-input flex-1">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-medium text-gray-700 mb-3">Light Thresholds</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <label for="highLightThreshold" class="w-32 text-sm font-medium text-gray-700">High Light (%):</label>
+                            <input type="number" id="highLightThreshold" placeholder="High threshold" class="threshold-input flex-1">
+                        </div>
+                        <div class="flex items-center">
+                            <label for="lowLightThreshold" class="w-32 text-sm font-medium text-gray-700">Low Light (%):</label>
+                            <input type="number" id="lowLightThreshold" placeholder="Low threshold" class="threshold-input flex-1">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-medium text-gray-700 mb-3">Sound Thresholds</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <label for="highSoundThreshold" class="w-32 text-sm font-medium text-gray-700">High Sound (dB):</label>
+                            <input type="number" id="highSoundThreshold" placeholder="High threshold" class="threshold-input flex-1">
+                        </div>
+                        <div class="flex items-center">
+                            <label for="lowSoundThreshold" class="w-32 text-sm font-medium text-gray-700">Low Sound (dB):</label>
+                            <input type="number" id="lowSoundThreshold" placeholder="Low threshold" class="threshold-input flex-1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button id="saveSettingsBtn" onclick="saveSettings()" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md transition-all duration-200 flex items-center">
+                    <i class="fa fa-save mr-2"></i> Save Settings
+                </button>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 card-shadow w-full">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold flex items-center">
+                    <i class="fa fa-table text-primary mr-2"></i> All Data Records
+                </h2>
+                <span id="totalRecords" class="text-sm bg-gray-100 px-3 py-1 rounded-full">0 Records</span>
+            </div>
+            <div class="overflow-x-auto scrollable-table overflow-y-auto max-h-[calc(10*(1rem+1rem+0.5rem))]">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 sticky top-0">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperature (°C)</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Humidity (%)</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Light (%)</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sound (dB)</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="my-8"></div>
+
+        <!-- 数据展示卡片 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- 温度和湿度警报记录 -->
+            <div class="bg-white rounded-xl p-6 card-shadow">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fa fa-exclamation-triangle text-danger mr-2"></i> Temperature & Humidity Alert Records
+                    </h2>
+                    <span id="alertCountTH" class="text-sm bg-danger/10 text-danger px-3 py-1 rounded-full">0 Records</span>
+                </div>
+                <div class="overflow-x-auto scrollable-alert overflow-y-auto max-h-[calc(6*(1rem+1rem+0.5rem))]">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parameter</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Value</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Threshold</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertTableBodyTH"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 光照和声音警报记录 -->
+            <div class="bg-white rounded-xl p-6 card-shadow">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fa fa-exclamation-triangle text-danger mr-2"></i> Light & Sound Alert Records
+                    </h2>
+                    <span id="alertCountLS" class="text-sm bg-danger/10 text-danger px-3 py-1 rounded-full">0 Records</span>
+                </div>
+                <div class="overflow-x-auto scrollable-alert overflow-y-auto max-h-[calc(6*(1rem+1rem+0.5rem))]">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parameter</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Value</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Threshold</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertTableBodyLS"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 存储原始数据的数组
+        let allData = [];
+
+        // 阈值设置，设置默认值
+        let highTempThreshold = 24;
+        let lowTempThreshold = 0;
+        let highHumidityThreshold = 50;
+        let lowHumidityThreshold = 0;
+        let highLightThreshold = 70;
+        let lowLightThreshold = 0;
+        let highSoundThreshold = 40;
+        let lowSoundThreshold = 0;
+
+        // 格式化时间的函数
+        function formatTime(time) {
+            const date = new Date(time);
+            const month = date.toLocaleString('en-US', { month: 'long' });
+            const day = date.getDate();
+            const year = date.getFullYear();
+
+            // 获取24小时制的小时数
+            let hours = date.getHours();
+            // 转换为12小时制
+            const adjustedHours = hours % 12 || 12; // 处理0点和12点的特殊情况
+            const hoursStr = String(adjustedHours).padStart(2, '0');
+
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const amPm = hours >= 12 ? 'p.m.' : 'a.m.';
+
+            return `${month} ${day}, ${year}, ${hoursStr}:${minutes} ${amPm}`;
+        }
+
+        function addDataFromDatabase(data, showAlertOnAdd = false) {
+            const dataTbody = document.getElementById('dataTableBody');
+            const alertTbodyTH = document.getElementById('alertTableBodyTH');
+            const alertTbodyLS = document.getElementById('alertTableBodyLS');
+
+            data.forEach(({ temperature, humidity, light, sound, time, location }) => {
+                const temp = parseFloat(temperature);
+                const hum = parseFloat(humidity);
+                const lt = parseFloat(light);
+                const sd = parseFloat(sound);
+
+                if (isNaN(temp) || isNaN(hum) || isNaN(lt) || isNaN(sd) || !time) {
+                    console.warn(`Invalid data skipped: temp=${temperature}, humidity=${humidity}, light=${light}, sound=${sound}, time=${time}`);
+                    return;
+                }
+
+                if (hum < 0 || hum > 100) {
+                    console.warn(`Invalid humidity skipped: ${hum}%`);
+                    return;
+                }
+
+                if (sd < -100 || sd > 100) {
+                    console.warn(`Invalid sound skipped: ${sd}%`);
+                    return;
+                }
+
+                // 格式化时间
+                const formattedTime = formatTime(time);
+
+                // 创建新行
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${formattedTime}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${location}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${temp}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${hum}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${lt}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${sd}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Normal</span>
+                    </td>
+                `;
+
+                let status = 'Normal';
+                const alertsTH = [];
+                const alertsLS = [];
+                const alertMessages = [];
+
+                if (highTempThreshold !== null && temp > highTempThreshold) {
+                    status = 'Alert';
+                    alertsTH.push({ time: formattedTime, location: location, parameter: 'Temperature', value: temp, threshold: highTempThreshold, condition: 'exceeds high' });
+                    alertMessages.push(`Temperature ${temp}°C exceeds high threshold of ${highTempThreshold}°C!`);
+                } else if (lowTempThreshold !== null && temp < lowTempThreshold) {
+                    status = 'Alert';
+                    alertsTH.push({ time: formattedTime, location: location, parameter: 'Temperature', value: temp, threshold: lowTempThreshold, condition: 'below low' });
+                    alertMessages.push(`Temperature ${temp}°C is below low threshold of ${lowTempThreshold}°C!`);
+                }
+
+                if (highHumidityThreshold !== null && hum > highHumidityThreshold) {
+                    status = 'Alert';
+                    alertsTH.push({ time: formattedTime, location: location, parameter: 'Humidity', value: hum, threshold: highHumidityThreshold, condition: 'exceeds high' });
+                    alertMessages.push(`Humidity ${hum}% exceeds high threshold of ${highHumidityThreshold}%!`);
+                } else if (lowHumidityThreshold !== null && hum < lowHumidityThreshold) {
+                    status = 'Alert';
+                    alertsTH.push({ time: formattedTime, location: location, parameter: 'Humidity', value: hum, threshold: lowHumidityThreshold, condition: 'below low' });
+                    alertMessages.push(`Humidity ${hum}% is below low threshold of ${lowHumidityThreshold}%!`);
+                }
+
+                if (highLightThreshold !== null && lt > highLightThreshold) {
+                    status = 'Alert';
+                    alertsLS.push({ time: formattedTime, location: location, parameter: 'Light', value: lt, threshold: highLightThreshold, condition: 'exceeds high' });
+                    alertMessages.push(`Light ${lt}% exceeds high threshold of ${highLightThreshold}%!`);
+                } else if (lowLightThreshold !== null && lt < lowLightThreshold) {
+                    status = 'Alert';
+                    alertsLS.push({ time: formattedTime, location: location, parameter: 'Light', value: lt, threshold: lowLightThreshold, condition: 'below low' });
+                    alertMessages.push(`Light ${lt}% is below low threshold of ${lowLightThreshold}%!`);
+                }
+
+                if (highSoundThreshold !== null && sd > highSoundThreshold) {
+                    status = 'Alert';
+                    alertsLS.push({ time: formattedTime, location: location, parameter: 'Sound', value: sd, threshold: highSoundThreshold, condition: 'exceeds high' });
+                    alertMessages.push(`Sound ${sd}dB exceeds high threshold of ${highSoundThreshold}dB!`);
+                } else if (lowSoundThreshold !== null && sd < lowSoundThreshold) {
+                    status = 'Alert';
+                    alertsLS.push({ time: formattedTime, location: location, parameter: 'Sound', value: sd, threshold: lowSoundThreshold, condition: 'below low' });
+                    alertMessages.push(`Sound ${sd}dB is below low threshold of ${lowSoundThreshold}dB!`);
+                }
+
+                row.cells[6].querySelector('span').textContent = status;
+                if (status === 'Alert') {
+                    // 设置整行为红色
+                    row.cells[6].querySelector("span").classList.remove("bg-green-100", "text-green-800");
+                    row.cells[6].querySelector("span").classList.add("bg-red-100", "text-red-800");
+                    row.classList.add('text-danger', 'font-medium', 'alert-row');
+                } else {
+                    // 移除红色样式
+                    row.classList.remove('text-danger', 'font-medium', 'alert-row');
+                }
+                dataTbody.appendChild(row);
+
+                // 显示警报弹窗（如果有警报且允许显示）
+                if (showAlertOnAdd && alertMessages.length > 0) {
+                    showAlert('Multiple Alerts', alertMessages);
+                }
+            });
+
+            // 重新生成所有警报记录
+            updateAlertRecords();
+        }
+
+        function updateAlertRecords() {
+            const alertTbodyTH = document.getElementById('alertTableBodyTH');
+            const alertTbodyLS = document.getElementById('alertTableBodyLS');
+            // 清空现有警报记录
+            alertTbodyTH.innerHTML = '';
+            alertTbodyLS.innerHTML = '';
+
+            // 遍历所有数据，收集当前触发的警报
+            const currentAlertsTH = [];
+            const currentAlertsLS = [];
+
+            allData.forEach(({ temperature, humidity, light, sound, time, location }) => {
+                const temp = parseFloat(temperature);
+                const hum = parseFloat(humidity);
+                const lt = parseFloat(light);
+                const sd = parseFloat(sound);
+
+                const formattedTime = formatTime(time);
+
+                if (highTempThreshold !== null && temp > highTempThreshold) {
+                    currentAlertsTH.push({ time: formattedTime, location: location, parameter: 'Temperature', value: temp, threshold: highTempThreshold, condition: 'exceeds high' });
+                } else if (lowTempThreshold !== null && temp < lowTempThreshold) {
+                    currentAlertsTH.push({ time: formattedTime, location: location, parameter: 'Temperature', value: temp, threshold: lowTempThreshold, condition: 'below low' });
+                }
+
+                if (highHumidityThreshold !== null && hum > highHumidityThreshold) {
+                    currentAlertsTH.push({ time: formattedTime, location: location, parameter: 'Humidity', value: hum, threshold: highHumidityThreshold, condition: 'exceeds high' });
+                } else if (lowHumidityThreshold !== null && hum < lowHumidityThreshold) {
+                    currentAlertsTH.push({ time: formattedTime, location: location, parameter: 'Humidity', value: hum, threshold: lowHumidityThreshold, condition: 'below low' });
+                }
+
+                if (highLightThreshold !== null && lt > highLightThreshold) {
+                    currentAlertsLS.push({ time: formattedTime, location: location, parameter: 'Light', value: lt, threshold: highLightThreshold, condition: 'exceeds high' });
+                } else if (lowLightThreshold !== null && lt < lowLightThreshold) {
+                    currentAlertsLS.push({ time: formattedTime, location: location, parameter: 'Light', value: lt, threshold: lowLightThreshold, condition: 'below low' });
+                }
+
+                if (highSoundThreshold !== null && sd > highSoundThreshold) {
+                    currentAlertsLS.push({ time: formattedTime, location: location, parameter: 'Sound', value: sd, threshold: highSoundThreshold, condition: 'exceeds high' });
+                } else if (lowSoundThreshold !== null && sd < lowSoundThreshold) {
+                    currentAlertsLS.push({ time: formattedTime, location: location, parameter: 'Sound', value: sd, threshold: lowSoundThreshold, condition: 'below low' });
+                }
+            });
+
+            // 添加当前触发的温度和湿度警报记录
+            currentAlertsTH.forEach(alert => {
+                const alertRow = document.createElement('tr');
+                alertRow.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${alert.time}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium ${alert.parameter === 'Temperature' ? 'text-red-500' : alert.parameter === 'Humidity' ? 'text-blue-500' : 'text-danger'}">${alert.location}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium ${alert.parameter === 'Temperature' ? 'text-red-500' : alert.parameter === 'Humidity' ? 'text-blue-500' : 'text-danger'}">${alert.parameter}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium ${alert.parameter === 'Temperature' ? 'text-red-500' : alert.parameter === 'Humidity' ? 'text-blue-500' : 'text-danger'}">${alert.value}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${alert.threshold} (${alert.condition})</td>
+                `;
+                alertTbodyTH.appendChild(alertRow);
+            });
+
+            // 添加当前触发的光照和声音警报记录
+            currentAlertsLS.forEach(alert => {
+                const alertRow = document.createElement('tr');
+                alertRow.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">${alert.time}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium ${alert.parameter === 'Light' ? 'text-orange-500' : alert.parameter === 'Sound' ? 'text-purple-500' : 'text-danger'}">${alert.location}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium ${alert.parameter === 'Light' ? 'text-orange-500' : alert.parameter === 'Sound' ? 'text-purple-500' : 'text-danger'}">${alert.parameter}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium ${alert.parameter === 'Light' ? 'text-orange-500' : alert.parameter === 'Sound' ? 'text-purple-500' : 'text-danger'}">${alert.value}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${alert.threshold} (${alert.condition})</td>
+                `;
+                alertTbodyLS.appendChild(alertRow);
+            });
+
+            // 更新警报计数
+            const alertCountTH = currentAlertsTH.length;
+            const alertCountLS = currentAlertsLS.length;
+            document.getElementById('alertCountTH').textContent = `${alertCountTH} ${alertCountTH === 1 ? 'Record' : 'Records'}`;
+            document.getElementById('alertCountLS').textContent = `${alertCountLS} ${alertCountLS === 1 ? 'Record' : 'Records'}`;
+        }
+
+        function saveSettings() {
+            const dataTbody = document.getElementById('dataTableBody');
+            const alertTbodyTH = document.getElementById('alertTableBodyTH');
+            const alertTbodyLS = document.getElementById('alertTableBodyLS');
+            dataTbody.innerHTML = "";
+            alertTbodyTH.innerHTML = "";
+            alertTbodyLS.innerHTML = "";
+
+            const highTemp = parseFloat(document.getElementById('highTempThreshold').value);
+            const lowTemp = parseFloat(document.getElementById('lowTempThreshold').value);
+            const highHumidity = parseFloat(document.getElementById('highHumidityThreshold').value);
+            const lowHumidity = parseFloat(document.getElementById('lowHumidityThreshold').value);
+            const highLt = parseFloat(document.getElementById('highLightThreshold').value);
+            const lowLt = parseFloat(document.getElementById('lowLightThreshold').value);
+            const highSd = parseFloat(document.getElementById('highSoundThreshold').value);
+            const lowSd = parseFloat(document.getElementById('lowSoundThreshold').value);
+
+            // 如果输入值无效，则使用默认值
+            highTempThreshold = isNaN(highTemp) ? highTempThreshold : highTemp;
+            lowTempThreshold = isNaN(lowTemp) ? lowTempThreshold : lowTemp;
+            highHumidityThreshold = isNaN(highHumidity) ? highHumidityThreshold : highHumidity;
+            lowHumidityThreshold = isNaN(lowHumidity) ? lowHumidityThreshold : lowHumidity;
+            highLightThreshold = isNaN(highLt) ? highLightThreshold : highLt;
+            lowLightThreshold = isNaN(lowLt) ? lowLightThreshold : lowLt;
+            highSoundThreshold = isNaN(highSd) ? highSoundThreshold : highSd;
+            lowSoundThreshold = isNaN(lowSd) ? lowSoundThreshold : lowSd;
+
+            if (highTempThreshold <= lowTempThreshold) {
+                alert('High temperature threshold must be greater than low temperature threshold.');
+                return;
+            }
+
+            if (highHumidityThreshold <= lowHumidityThreshold) {
+                alert('High humidity threshold must be greater than low humidity threshold.');
+                return;
+            }
+
+            if (highLightThreshold <= lowLightThreshold) {
+                alert('High light threshold must be greater than low light threshold.');
+                return;
+            }
+
+            if (highSoundThreshold <= lowSoundThreshold) {
+                alert('High sound threshold must be greater than low sound threshold.');
+                return;
+            }
+
+            if (highHumidityThreshold > 100 || lowHumidityThreshold < 0) {
+                alert('Humidity thresholds must be between 0 and 100%.');
+                return;
+            }
+
+            if (highSoundThreshold > 100 || lowSoundThreshold < -100) {
+                alert('Sound thresholds must be between -100 and 100%.');
+                return;
+            }
+
+            // 重新评估所有数据的状态，但不显示警报弹窗
+            addDataFromDatabase(allData, false);
+
+            alert('Threshold settings saved successfully!');
+        }
+
+        // 页面加载时从 Django 后端传入数据
+        window.addEventListener('load', function () {
+            const djangoData = [
+                {% for item in data %}
+                { temperature: {{ item.temp }}, humidity: {{ item.hum }}, light: {{ item.light }}, sound: {{ item.snd }}, time: "{{ item.date_created|date:'Y-m-d\TH:i' }}", location: "{{ item.loc }}" },
+                {% endfor %}
+            ];
+
+            allData = djangoData;
+            addDataFromDatabase(allData, false);
+            document.getElementById('totalRecords').textContent = `${allData.length} Records`;
+        });
+    </script>
+</body>
+
+</html>
