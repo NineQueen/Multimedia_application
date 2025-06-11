@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="{% static 'cal.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'cal.ico' %}" type="image/x-icon" />
     <title>Location Sensor Dashboard</title>
     <!-- 引入外部资源 -->
     <link
@@ -36,9 +36,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.27/dist/sweetalert2.all.min.js"></script>
     <!-- 自定义样�? -->
     <style>
-        a {
+      a {
         text-decoration: none;
-        color: inherit
+        color: inherit;
       }
       :root {
         /* 主色�? - 蓝色�? */
@@ -330,6 +330,37 @@
           font-size: 1.2rem;
         }
       }
+      .status-tag {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .status-upcoming {
+        color: #007bff; /* 主色：蓝色 */
+        border: 2px dashed #007bff; /* 虚线边框 */
+        background-color: #e3f2fd; /* 淡蓝色背景 */
+      }
+      .status-ongoing {
+        color: #28a745; /* 主色：绿色 */
+        border: 2px solid #28a745; /* 实心边框 */
+        background: linear-gradient(
+          135deg,
+          #d4edda,
+          #28a7451a
+        ); /* 绿色渐变背景 */
+        box-shadow: 0 2px 4px rgba(40, 167, 69, 0.1); /* 轻微阴影 */
+      }
+      .status-finish {
+        color: #6c757d; /* 主色：深灰色 */
+        border: 2px solid #dee2e6; /* 浅灰色边框 */
+        background-color: #f8f9fa; /* 白色背景 */
+        text-decoration: line-through; /* 删除线 */
+        opacity: 0.8; /* 轻微透明 */
+      }
     </style>
   </head>
   <body>
@@ -362,6 +393,11 @@
               </div>
               <div class="col-md-6 form-group">
                 {{ form.loc.label_tag }} {{ form.loc }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-15 form-group">
+                {{ form.instructor.label_tag }} {{ form.instructor }}
               </div>
             </div>
             <div class="row">
@@ -400,20 +436,32 @@
               <tr>
                 <th>Name</th>
                 <th>Location</th>
+                <th>Instructor</th>
                 <th>Begin Time</th>
                 <th>End Time</th>
                 <th>Description</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {% for entry in events %}
+              {% for entry in entrys %}
               <tr class="clickable-row" data-id="{{ entry.id }}">
                 <td>{{ entry.name }}</td>
                 <td>{{ entry.loc }}</td>
+                <td>{{ entry.instructor }}</td>
                 <td>{{ entry.begin_time|date:"Y-m-d H:i" }}</td>
                 <td>{{ entry.end_time|date:"Y-m-d H:i" }}</td>
                 <td>{{ entry.Description|truncatechars:30 }}</td>
-            </tr>
+                {% if entry.status == "Upcoming" %}
+                <td>
+                  <span class="status-tag status-upcoming">Upcoming</span>
+                </td>
+                {% elif entry.status == "Ongoing" %}
+                <td><span class="status-tag status-ongoing">Ongoing</span></td>
+                {% elif entry.status == "Finish" %}
+                <td><span class="status-tag status-finish">Finished</span></td>
+                {% endif %}
+              </tr>
               {% endfor %}
             </tbody>
           </table>
@@ -432,14 +480,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll('.clickable-row').forEach(row => {
-            row.addEventListener('click', function() {
-                    const eventId = this.getAttribute('data-id');
-                    if (eventId) {
-                        window.location.href = `/eventlist?id=${eventId}`;
-                    }
-                });
-            });
+        document.querySelectorAll(".clickable-row").forEach((row) => {
+          row.addEventListener("click", function () {
+            const eventId = this.getAttribute("data-id");
+            if (eventId) {
+              window.location.href = `/eventlist?id=${eventId}`;
+            }
+          });
+        });
         const type = "{{ type }}";
         const errorMessage = "{{ error_message|default:'' }}";
         if (type === "fail") {

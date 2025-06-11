@@ -28,6 +28,7 @@
             --hum-color: #3498db;
             --light-color: #f39c12;
             --sound-color: #2ecc71;
+            --status-color: orange;
         }
         
         body {
@@ -112,7 +113,7 @@
         .sensor-card.hum::before { background: var(--hum-color); }
         .sensor-card.light::before { background: var(--light-color); }
         .sensor-card.sound::before { background: var(--sound-color); }
-        
+        .sensor-card.status::before { background: var(--status-color); }
         .sensor-icon {
             width: 70px;
             height: 70px;
@@ -129,7 +130,7 @@
         .hum-icon { background: var(--hum-color); }
         .light-icon { background: var(--light-color); }
         .sound-icon { background: var(--sound-color); }
-        
+        .status-icon { background: var(--status-color); }
         .sensor-value {
             font-size: 1.8rem;
             font-weight: 700;
@@ -140,7 +141,7 @@
         .hum-value { color: var(--hum-color); }
         .light-value { color: var(--light-color); }
         .sound-value { color: var(--sound-color); }
-        
+        .status-value { color: var(--status-color); }
         .sensor-title {
             font-weight: 600;
             color: var(--dark);
@@ -369,6 +370,14 @@
                                 <div class="sensor-value sound-value" id="snd-value">--dB</div>
                                 <div class="sensor-status" id="snd-status">Awaiting data...</div>
                             </div>
+                            <div class="card sensor-card status">
+                                <div class="sensor-icon status-icon">
+                                    <i class="fa-solid fa-info"></i>
+                                </div>
+                                <div class="sensor-title">Status</div>
+                                <div class="sensor-value status-value" id="snd-value">--dB</div>
+                                <div class="sensor-status" id="status-status">Awaiting data...</div>
+                            </div>
                         </div>
                         <div class="text-center mt-3">
                             <div class="last-updated">
@@ -450,10 +459,10 @@
         // Global variables
         let tempPivot, humPivot, lightPivot, sndPivot;
         let currentAggregation = {
-            temp: "sum",
-            hum: "sum",
-            light: "sum",
-            snd: "sum"
+            temp: "avg",
+            hum: "avg",
+            light: "avg",
+            snd: "avg"
         };
         
         let currentProcessedData = [];

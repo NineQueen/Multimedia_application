@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.core import serializers
-from projectApp.models import Information
+from projectApp.models import Information,Event
 from projectApp.views import get_series_data
 
 # Create your views here.
 def index(request):
     data = get_series_data()
-    context = {"data":data}
+    context = {"data":data,}
     return render(request, 'dashboard/index.html',context)
 def temp_data(request):
     try:
@@ -15,9 +15,9 @@ def temp_data(request):
             print(request.GET["loc"])
             events = Information.objects.filter(loc = request.GET["loc"])
         else:
-            events = Information.objects.all()
+            events = Information.objects.order_by("-date_created")[0:500]
     except BaseException as e:
-        events = Information.objects.all()
+        events = Information.objects.all().order_by("-date_created")[0:500]
     data = serializers.serialize('json', events) #Translating Django models into JSON formats
     return JsonResponse(data, safe=False) #Returns a string that contains an array object
 

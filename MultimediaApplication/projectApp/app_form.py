@@ -39,7 +39,7 @@ class EventForm(forms.ModelForm):
     )
     class Meta:
         model = Event
-        fields = ['begin_time', 'end_time', 'Description',"name"]
+        fields = ['begin_time', 'end_time', 'Description',"name","instructor"]
         # �Զ�������ֶε�С�����ͱ�ǩ
         widgets = {
             'begin_time': forms.DateTimeInput(
@@ -60,10 +60,16 @@ class EventForm(forms.ModelForm):
                     'rows': 4,
                 }
             ),
-            'name': forms.DateTimeInput(
+            'name': forms.TextInput(
                 attrs={
                     'class': 'form-control',
-                    "maxlength":8
+                    "maxlength":8,
+                }
+            ),
+            'instructor': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    "maxlength":20,
                 }
             ),
         }
@@ -71,6 +77,7 @@ class EventForm(forms.ModelForm):
             "begin_time":"Begin Time",
             "end_time":"End Time",
             'Description': 'Event Description',
+            "instructor":"Instructor",
         }
         input_formats = {
             "begin_time":['%Y-%m-%dT%H:%M'],

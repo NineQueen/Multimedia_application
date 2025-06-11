@@ -5,7 +5,7 @@ from .app_form import LocationForm,EventForm
 from django.db.models import Avg,Max,Min,Count,FloatField
 from django.db.models.functions import Round
 from django.utils import timezone
-from . import mqtt_iot
+from . import mqtt_iot,request
 # Create your views here.
 def tot_data_list(request):
     data_collected = Information.objects.all()
@@ -101,12 +101,47 @@ def add_event(request):
     locations.append((None,"--"))
     for i in location:
         locations.append((i[0],i[0]))
-    events = Event.objects.all()
-    context = {"events":events}
+    events = Event.objects.all().order_by("end_time")
+    events_status = []
+    tot_events = []
+    time = timezone.now()
+    for event in events:
+        this_event = {
+            "id":event.id,
+            "name":event.name,
+            "loc":event.loc,
+            "instructor":event.instructor,
+            "begin_time":event.begin_time,
+            "end_time":event.end_time,
+            "Description":event.Description,
+        }
+        if event.end_time < time:
+                this_event["status"] = "Finish"
+        elif time < event.begin_time:
+                this_event["status"] = "Upcoming"
+        elif event.begin_time <= time <= event.end_time:
+                this_event["status"] = "Ongoing"
+        tot_events.append(this_event)
+    context = {"entrys":tot_events}
     if "id" in request.GET:
         try:
             event_id = Event.objects.filter(id = int(request.GET["id"]))[0]
-            context["id"] = event_id
+            ans = {
+                "id":event_id.id,
+                "name":event_id.name,
+                "loc":event_id.loc,
+                "instructor":event_id.instructor,
+                "begin_time":event_id.begin_time,
+                "end_time":event_id.end_time,
+                "Description":event_id.Description,
+            }
+            if ans["end_time"] < time:
+                ans["status"] = "Finish"
+            elif time < ans["begin_time"]:
+                ans["status"] = "Upcoming"
+            elif ans["begin_time"] <= time <= ans["end_time"]:
+                ans["status"] = "Ongoing"
+            context["id"] = ans
             return render(request,"projectApp/event_list.html",context)
         except Exception as e:
             print(e)
@@ -127,6 +162,8 @@ def add_event(request):
                 event.loc = loc
                 event = form.save()
                 return redirect(request.path)
+            else:
+                print("check form",form)
         except Exception as e:
             print(e)
             form = EventForm()

@@ -18,12 +18,12 @@ class Information(models.Model):
         verbose_name_plural = "Information"
 
 class Event(models.Model):
-    name = models.CharField(max_length=8)
+    name = models.CharField(max_length=10)
     begin_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    loc = models.CharField(max_length=6)
-    Description = models.TextField()
-
+    loc = models.CharField(max_length=20)
+    Description = models.TextField(null=True,blank=True)
+    instructor = models.CharField(max_length=20,null=False)
     def __str__(self):
         return "Event #{}".format(self.id)
     
