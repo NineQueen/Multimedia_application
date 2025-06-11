@@ -418,7 +418,7 @@
   </head>
   <body>
     <!-- 头部区域 -->
-    <a href="/eventlist" class="home-button" title="Main Page">
+    <a href="javascript:history.back()" class="home-button" title="Main Page">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
     <header class="header">
@@ -503,10 +503,16 @@
             <div class="event-detail-icon">
               <i class="fa-solid fa-circle-info"></i>
             </div>
+            {% if id.status != "Upcoming" %}
+            <a href="/dashboard/history?id={{id.id}}">
             <div>
               <div class="event-detail-label">Status</div>
               <div class="event-detail-value">{{ id.status }}</div>
             </div>
+            </a>
+            {% else %}
+
+            {% endif %}
           </div>
         </div>
       </div>

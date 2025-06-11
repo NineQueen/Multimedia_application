@@ -375,13 +375,9 @@
                                 <div class="sensor-icon status-icon">
                                     <i class="fa-solid fa-info"></i>
                                 </div>
-                                <div class="sensor-title">Status</div>
-                                {% if status == True %}
-                                <div class="sensor-value status-value" id="snd-value">Empty</div>
-                                {% else %}
-                                <div class="sensor-value status-value" id="snd-value">Using</div>
-                                <div class="sensor-status" id="status-status">{{event.name}}</div>
-                                {% endif %}
+                                <div class="sensor-title">History</div>     
+                                <div class="sensor-value status-value" id="snd-value">{{event.name}}</div>
+                                <div class="sensor-status" id="status-status">Hitory</div>  
                             </div>
                             </a>
                         </div>
@@ -779,9 +775,10 @@
             document.getElementById('update-time').textContent = `${dateString} ${timeString}`;
         }
         // Fetch data from server
+        console.log('/dashboard/temp_data?id='+"{{event.id}}")
         function fetchData() {
             $.ajax({
-                url: '/dashboard/temp_data?loc='+"{{loc}}",
+                url: '/dashboard/temp_data?id='+"{{event.id}}",
                 dataType: 'json',
                 success: function(data) {
                     if (currentProcessedData.length === 0) {
