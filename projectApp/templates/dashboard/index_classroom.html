@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{loc}} Environment Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
     <link rel="icon" href="{% static 'dashb.ico' %}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -297,6 +299,168 @@
                 font-size: 1.2rem;
             }
         }
+
+        /* Calendar styling */
+        #calendar {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .fc-event {
+            cursor: pointer;
+            border-radius: 4px;
+            padding: 2px 5px;
+            font-size: 0.85rem;
+        }
+
+        .fc-event-empty { background-color: #2ecc71; }
+        .fc-event-ongoing { background-color: #3498db; }
+        .fc-event-upcoming { background-color: #9b59b6; }
+        .fc-event-finished { background-color: #95a5a6; }
+
+        .fc-day-today {
+            background-color: rgba(255, 220, 40, 0.15) !important;
+        }
+
+        /* Event popover styling */
+        .event-popover {
+            max-width: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            border: none;
+        }
+
+        .popover-header {
+            background: linear-gradient(to right, #4361ee, #3f37c9);
+            color: white;
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
+            font-weight: 600;
+        }
+
+        .popover-body {
+            padding: 15px;
+        }
+
+        .event-detail {
+            margin-bottom: 8px;
+            display: flex;
+        }
+
+        .event-label {
+            font-weight: 600;
+            min-width: 100px;
+            color: #4361ee;
+        }
+
+        .event-value {
+            flex: 1;
+        }
+
+
+/* Enhanced Calendar Styling */
+.fc-event-content {
+    padding: 8px 10px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.fc-event-title {
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 70%;
+}
+
+.fc-event-status {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.fc-event-time, .fc-event-instructor {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Event detail improvements */
+.event-detail {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.event-label {
+    font-weight: 600;
+    min-width: 120px;
+    color: #4361ee;
+    display: flex;
+    align-items: center;
+}
+
+.event-value {
+    flex: 1;
+    word-break: break-word;
+}
+
+.popover-header {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+.popover-header h5 {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.popover-body {
+    padding: 15px;
+}
+
+/* ========== 周视图 (Week View) 样式 ========== */
+.fc-timeGridWeek-view .fc-event {
+    color: #000000; /* 设置事件文字颜色为白色 */
+}
+
+.fc-timeGridWeek-view .fc-event .fc-event-title {
+    font-weight: bold; /* 可选：加粗标题 */
+}
+
+.fc-timeGridWeek-view .fc-col-header-cell {
+    color: #333; /* 表头（星期几）文字颜色 */
+    font-weight: bold;
+}
+
+/* ========== 日视图 (Day View) 样式 ========== */
+.fc-timeGridDay-view .fc-event {
+    color: #000000; /* 设置事件文字颜色为白色 */
+}
+
+.fc-timeGridDay-view .fc-event .fc-event-title {
+    font-weight: bold; /* 可选：加粗标题 */
+}
+
+.fc-timeGridDay-view .fc-col-header-cell {
+    color: #333; /* 表头（日期）文字颜色 */
+    font-weight: bold;
+}
+
+/* 确保所有视图下的事件文字颜色为黑色 */
+.fc-event .fc-event-content {
+    color: #000 !important;
+}
+
+/* 确保事件标题和状态文字颜色为黑色 */
+.fc-event-title,
+.fc-event-time,
+.fc-event-instructor {
+    color: #000 !important;
+}
+
     </style>
 </head>
 <body>
@@ -376,22 +540,37 @@
                                     <i class="fa-solid fa-info"></i>
                                 </div>
                                 <div class="sensor-title">Status</div>
-                                {% if status == "Upcoming" %}
-                                <div class="sensor-value status-value" id="snd-value">{{event.name}}</div>
-                                <div class="sensor-status" id="status-status">Upcoming</div>
-                                {% elif status == "Using" %}
-                                <div class="sensor-value status-value" id="snd-value">{{event.name}}</div>
-                                <div class="sensor-status" id="status-status">Using</div>
-                                {% elif status == "Empty" %}
-                                <div class="sensor-value status-value" id="snd-value">No Event</div>
-                                <div class="sensor-status" id="status-status">Empty</div>
+                                {% if status == True %}
+                                <div class="sensor-value status-value" id="snd-value">Empty</div>
+                                {% else %}
+                                <div class="sensor-value status-value" id="snd-value">Using</div>
+                                <div class="sensor-status" id="status-status">{{event.name}}</div>
                                 {% endif %}
                             </div>
                             </a>
                         </div>
+                        <div class="text-center mt-3">
+                            <div class="last-updated">
+                                <i class="fas fa-sync me-1"></i> Last updated: <span id="update-time">--:--:--</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
+                <!-- Classroom Schedule Calendar -->
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-calendar-alt me-2"></i>Classroom Schedule - {{loc}}
+                            </div>
+                            <div class="card-body">
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Real-time Trend Charts -->
                 <div class="row" >
                     <div class="col-md-6">
@@ -461,6 +640,198 @@
     </div>
 
     <script>
+        // ========================
+        // Calendar Initialization
+        // ========================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize calendar
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                height: 'auto',
+                eventClick: function(info) {
+                    showEventDetails(info.event);
+                },
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    fetchClassroomEvents(fetchInfo.start, fetchInfo.end, successCallback);
+                },
+
+                eventContent: function(arg) {
+    const event = arg.event;
+    const status = event.extendedProps.status;
+    const startTime = formatTime(event.start);
+    const endTime = formatTime(event.end);
+    
+    // 状态图标映射
+    const statusIcons = {
+        'Ongoing': '<i class="fas fa-play-circle me-1"></i>',
+        'Upcoming': '<i class="fas fa-clock me-1"></i>',
+        'Finished': '<i class="fas fa-check-circle me-1"></i>'
+    };
+
+    // 时间格式化辅助函数
+function formatTime(date) {
+    if (!date) return '';
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+    
+    // 状态颜色映射
+    const statusColors = {
+        'Ongoing': '#3498db',
+        'Upcoming': '#9b59b6',
+        'Finished': '#95a5a6'
+    };
+    
+    // 创建自定义事件内容
+    return {
+        html: `
+        <a href = "/eventlist?id=${event.extendedProps.event_id}">
+            <div class="fc-event-content" style="border-left: 4px solid ${statusColors[status]};">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="fc-event-title fw-bold">${event.title}</div>
+                    <div class="fc-event-status badge" style="background: ${statusColors[status]}">
+                        ${statusIcons[status]}${status}
+                    </div>
+                </div>
+                <div class="fc-event-time small mt-1">
+                    <i class="far fa-clock me-1"></i>
+                    ${startTime} - ${endTime}
+                </div>
+                <div class="fc-event-instructor small">
+                    <i class="fas fa-user me-1"></i>
+                    ${event.extendedProps.instructor}
+                </div>
+            </div>
+        </a>
+        `
+    };
+},
+
+                eventClassNames: function(arg) {
+                    // Apply status-based classes
+                    const status = arg.event.extendedProps.status;
+                    return ['fc-event-' + status.toLowerCase()];
+                },
+                dateClick: function(info) {
+                    calendar.changeView('timeGridDay', info.dateStr);
+                }
+            });
+    
+            calendar.render();
+    
+            // Fetch classroom events
+            function fetchClassroomEvents(start, end, callback) {
+                const startStr = start.toISOString().split('T')[0];
+                const endStr = end.toISOString().split('T')[0];
+        
+                $.ajax({
+                    url: `/api/events/?loc={{loc}}&start=${startStr}&end=${endStr}`,
+                    type: 'GET',
+                    success: function(events) {
+                        callback(events);
+                    },
+                    error: function() {
+                        console.error('Failed to load events');
+                        callback([]);
+                    }
+                });
+            }
+    
+            // Show event details in popover
+            function showEventDetails(event) {
+
+                const extendedProps = event.extendedProps;
+    const start = formatDateTime(event.start);
+    const end = formatDateTime(event.end);
+    
+    // 创建更详细的弹出内容
+    const popoverContent = `
+        <div class="popover-header d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">${event.title}</h5>
+                <div class="badge bg-${getStatusBadgeClass(extendedProps.status)} mt-1">
+                    ${extendedProps.status}
+                </div>
+            </div>
+            <div class="text-end">
+                <small class="d-block">${start}</small>
+                <small class="d-block">to ${end}</small>
+            </div>
+        </div>
+        <div class="popover-body">
+            <div class="event-detail">
+                <div class="event-label"><i class="fas fa-map-marker-alt me-1"></i> Location:</div>
+                <div class="event-value">${extendedProps.loc}</div>
+            </div>
+            <div class="event-detail">
+                <div class="event-label"><i class="fas fa-user-tie me-1"></i> Instructor:</div>
+                <div class="event-value">${extendedProps.instructor}</div>
+            </div>
+            <div class="event-detail">
+                <div class="event-label"><i class="fas fa-align-left me-1"></i> Description:</div>
+                <div class="event-value">${extendedProps.description || '<em>No description provided</em>'}</div>
+            </div>
+            <div class="event-detail mt-3">
+                <div class="event-label"><i class="fas fa-info-circle me-1"></i> Event ID:</div>
+                <div class="event-value">${event.id}</div>
+            </div>
+            <div class="d-grid gap-2 mt-3">
+                <button class="btn btn-sm btn-outline-primary" onclick="location.href='/eventlist?id=${event.id}'">
+                    <i class="fas fa-external-link-alt me-1"></i> View Event Details
+                </button>
+            </div>
+        </div>
+    `;
+        
+                // Create and show popover
+                const popover = new bootstrap.Popover(event.el, {
+                    content: popoverContent,
+                    html: true,
+                    container: 'body',
+                    placement: 'auto',
+                    template: '<div class="popover event-popover" role="tooltip"><div class="popover-arrow"></div><div class="popover-header"></div><div class="popover-body"></div></div>',
+                    trigger: 'focus'
+                });
+        
+                popover.show();
+        
+                // Close popover when clicking outside
+                $(document).on('click', function(e) {
+                    if (!$(event.el).is(e.target) && $(event.el).has(e.target).length === 0) {
+                        popover.hide();
+                    }
+                });
+            }
+    
+            // Helper function to format date/time
+            function formatDateTime(date) {
+                if (!date) return 'N/A';
+                return date.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+    
+            // Helper function for status badge class
+            function getStatusBadgeClass(status) {
+                switch(status.toLowerCase()) {
+                    case 'ongoing': return 'primary';
+                    case 'upcoming': return 'info';
+                    case 'finished': return 'secondary';
+                    default: return 'light text-dark';
+                }
+            }
+        });
+
         // Global variables
         let tempPivot, humPivot, lightPivot, sndPivot;
         let currentAggregation = {
@@ -638,7 +1009,7 @@
             updateSensorStatus(currentProcessedData);
             
             // Update last updated time
-            //updateDateTime();
+            updateDateTime();
             
             // Initialize charts
             tempPivot = new Flexmonster(createReport(
@@ -689,7 +1060,7 @@
             updateSensorStatus(currentProcessedData);
             
             // Update last updated time
-            //updateDateTime();
+            updateDateTime();
             
             // Update each chart
             if (tempPivot) {
@@ -771,12 +1142,12 @@
         }
 
         // Update date/time display
-        // function updateDateTime() {
-        //     const now = new Date();
-        //     const timeString = now.toLocaleTimeString();
-        //     const dateString = now.toLocaleDateString();
-        //     document.getElementById('update-time').textContent = `${dateString} ${timeString}`;
-        // }
+        function updateDateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+            document.getElementById('update-time').textContent = `${dateString} ${timeString}`;
+        }
         // Fetch data from server
         function fetchData() {
             $.ajax({
@@ -809,7 +1180,7 @@
             setInterval(fetchData, 60000);
             
             // Update time every second
-            //setInterval(updateDateTime, 1000);
+            setInterval(updateDateTime, 1000);
             
             // Chart type buttons
             $('.chart-btn').on('click', function() {

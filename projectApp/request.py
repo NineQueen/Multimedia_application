@@ -6,13 +6,14 @@ mqtt_broker = "ia.ic.polyu.edu.hk"
 mqtt_port = 1883
 mqtt_qos = 1
 mqtt_topic = "iot/request-A09"
-mqtt_client = mqtt.Client("Request-A09")
+mqtt_client = mqtt.Client("Request-Zhuv1")
 mqtt_client.connect(mqtt_broker, mqtt_port)
 mqtt_client.subscribe(mqtt_topic, mqtt_qos)
 
 def mqtt_on_message(client, userdata, message):
     try:
         d_msg = str(message.payload.decode("utf-8"))
+        print("get message",d_msg)
         iotData = json.loads(d_msg)
         if type(iotData['count']) == int:
             locations = Information.objects.values_list('loc', flat = True).distinct().order_by('loc')

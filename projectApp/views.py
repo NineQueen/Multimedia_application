@@ -5,7 +5,10 @@ from .app_form import LocationForm,EventForm,EventQuery
 from django.db.models import Avg,Max,Min,Count,FloatField
 from django.db.models.functions import Round
 from django.utils import timezone
-#from . import mqtt_iot,request
+from django.http import JsonResponse
+from django.views import View
+import json
+from . import mqtt_iot,request
 # Create your views here.
 def tot_data_list(request):
     data_collected = Information.objects.all()
@@ -124,6 +127,7 @@ def add_event(request):
         tot_events.append(this_event)
     context = {"entrys":tot_events}
     if "id" in request.GET:
+        print("check")
         try:
             event_id = Event.objects.filter(id = int(request.GET["id"]))[0]
             ans = {
@@ -184,7 +188,7 @@ def add_event(request):
                         elif event.begin_time <= time <= event.end_time:
                                 this_event["status"] = "Ongoing"
                         tot_events.append(this_event)
-                    context = {"entrys":tot_events}
+                    context["entrys"] = tot_events
             if "clear" in request.GET:
                 print("path",request.path)
                 return redirect(request.path+"?id={}".format(request.GET["id"]))
@@ -326,3 +330,54 @@ def environmental_monitoring_v3(request):
     return render(request, 'projectApp/env-monitor-v3.html', {
         'data': data
     })
+
+class EventApiView(View):
+    def get(self, request):
+        try:
+            loc = request.GET.get('loc')
+            start_date = request.GET.get('start')
+            end_date = request.GET.get('end')
+            
+            # Convert string dates to datetime objects
+            if start_date:
+                start_date = timezone.datetime.strptime(start_date, '%Y-%m-%d')
+            if end_date:
+                end_date = timezone.datetime.strptime(end_date, '%Y-%m-%d')
+            
+            # Filter events
+            events = Event.objects.filter(loc=loc)
+            if start_date:
+                events = events.filter(end_time__gte=start_date)
+            if end_date:
+                events = events.filter(begin_time__lte=end_date)
+            
+            # Prepare events data
+            events_data = []
+            current_time = timezone.now()
+            
+            for event in events:
+                status = "Upcoming"
+                if event.end_time < current_time:
+                    status = "Finished"
+                elif event.begin_time <= current_time <= event.end_time:
+                    status = "Ongoing"
+                
+                # 添加更多事件详情
+                events_data.append({
+                    'id': event.id,
+                    'title': f"{event.name} ({event.instructor})",
+                    'start': event.begin_time.isoformat(),
+                    'end': event.end_time.isoformat(),
+                    'extendedProps': {
+                        'loc': event.loc,
+                        'instructor': event.instructor,
+                        'description': event.Description,
+                        'status': status,
+                        'event_id': event.id
+                    }
+                })
+            
+            return JsonResponse(events_data, safe=False)
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)

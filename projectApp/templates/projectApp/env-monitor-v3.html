@@ -34,6 +34,7 @@
             }
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <style type="text/tailwindcss">
         @layer utilities {
             .content-auto {
@@ -382,11 +383,11 @@
                         <div class="space-y-3">
                             <div class="flex items-center">
                                 <label for="highTempThreshold" class="w-32 text-sm font-medium text-gray-700">High Temperature (°C):</label>
-                                <input type="number" id="highTempThreshold" placeholder="High threshold" class="threshold-input flex-1">
+                                <input type="number" id="highTempThreshold" placeholder="Default value = 30" class="threshold-input flex-1">
                             </div>
                             <div class="flex items-center">
                                 <label for="lowTempThreshold" class="w-32 text-sm font-medium text-gray-700">Low Temperature (°C):</label>
-                                <input type="number" id="lowTempThreshold" placeholder="Low threshold" class="threshold-input flex-1">
+                                <input type="number" id="lowTempThreshold" placeholder="Default value = 10" class="threshold-input flex-1">
                             </div>
                         </div>
                     </div>
@@ -395,11 +396,11 @@
                         <div class="space-y-3">
                             <div class="flex items-center">
                                 <label for="highHumidityThreshold" class="w-32 text-sm font-medium text-gray-700">High Humidity (%):</label>
-                                <input type="number" id="highHumidityThreshold" placeholder="High threshold" class="threshold-input flex-1">
+                                <input type="number" id="highHumidityThreshold" placeholder="Default value = 50" class="threshold-input flex-1">
                             </div>
                             <div class="flex items-center">
                                 <label for="lowHumidityThreshold" class="w-32 text-sm font-medium text-gray-700">Low Humidity (%):</label>
-                                <input type="number" id="lowHumidityThreshold" placeholder="Low threshold" class="threshold-input flex-1">
+                                <input type="number" id="lowHumidityThreshold" placeholder="Default value = 0" class="threshold-input flex-1">
                             </div>
                         </div>
                     </div>
@@ -408,11 +409,11 @@
                         <div class="space-y-3">
                             <div class="flex items-center">
                                 <label for="highLightThreshold" class="w-32 text-sm font-medium text-gray-700">High Light (%):</label>
-                                <input type="number" id="highLightThreshold" placeholder="High threshold" class="threshold-input flex-1">
+                                <input type="number" id="highLightThreshold" placeholder="Default value = 70" class="threshold-input flex-1">
                             </div>
                             <div class="flex items-center">
                                 <label for="lowLightThreshold" class="w-32 text-sm font-medium text-gray-700">Low Light (%):</label>
-                                <input type="number" id="lowLightThreshold" placeholder="Low threshold" class="threshold-input flex-1">
+                                <input type="number" id="lowLightThreshold" placeholder="Default value = 0" class="threshold-input flex-1">
                             </div>
                         </div>
                     </div>
@@ -421,11 +422,11 @@
                         <div class="space-y-3">
                             <div class="flex items-center">
                                 <label for="highSoundThreshold" class="w-32 text-sm font-medium text-gray-700">High Sound (dB):</label>
-                                <input type="number" id="highSoundThreshold" placeholder="High threshold" class="threshold-input flex-1">
+                                <input type="number" id="highSoundThreshold" placeholder="Default value = 40" class="threshold-input flex-1">
                             </div>
                             <div class="flex items-center">
                                 <label for="lowSoundThreshold" class="w-32 text-sm font-medium text-gray-700">Low Sound (dB):</label>
-                                <input type="number" id="lowSoundThreshold" placeholder="Low threshold" class="threshold-input flex-1">
+                                <input type="number" id="lowSoundThreshold" placeholder="Default value = 0" class="threshold-input flex-1">
                             </div>
                         </div>
                     </div>
@@ -510,6 +511,25 @@
                 </div>
         </div>
         <div class="my-8"></div>
+        <div class="bg-white rounded-xl p-6 mb-8 card-shadow">
+            <form id="emailForm">
+                
+                <div class="mb-4">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <i class="fa fa-table text-primary mr-2"></i> Export alert records
+                    </h2>
+                    <h3 class="font-small text-gray-500 mb-3 mt-2"> Max: 100 records each [latest]</h3>
+                    <!--<label for="to_email" class="block text-sm font-medium text-gray-700">Recipient Email</label>-->
+                    <input type="email" id="to_email" required placeholder="recipient@example.com"
+                        class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                </div>
+                <button type="button" onclick="sendEmail()"
+                    class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-md transition-all duration-200 flex items-center">
+                    Send
+                </button>
+            </form>
+            <div id="status" class="mt-4 px-3 py-2 rounded-md"></div>
+        </div>
         <script>
             // 存储原始数据的数组
             let allData = [];
@@ -805,6 +825,102 @@
                 addDataFromDatabase(allData, false);
                 document.getElementById('totalRecords').textContent = `${allData.length} Records`;
             });
+
+            // Initialize EmailJS (replace with your User ID)
+        emailjs.init("ow7TxD8x-S1JcT5-N");
+
+        // Send email function
+        // Send email function
+        maxLength = 100;
+        function sendEmail() {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = '';
+            statusElement.className = 'mt-4 px-3 py-2 rounded-md';
+            // Collect alert records
+            const alertTbodyTH = document.getElementById('alertTableBodyTH');
+            const alertTbodyLS = document.getElementById('alertTableBodyLS');
+            let messageMainA = '';
+            let messageMainB = '';
+
+            // 收集温度和湿度警报（修改部分）
+            const rowsTH = alertTbodyTH.rows;
+            if (rowsTH.length > 100){
+                for (let i = 0; i < 100; i++) {
+                const cells = rowsTH[i].cells;
+                const time = cells[0].textContent;
+                const location = cells[1].textContent;
+                const parameter = cells[2].textContent;
+                const value = cells[3].textContent;
+                const threshold = cells[4].textContent;
+
+                // 在Parameter前换行，并设置加粗红色格式
+                messageMainA += `Time: ${time}, Location: ${location}\nParameter: ${parameter}, Current Value: ${value}, Threshold: ${threshold}\n\n`;
+            }
+            }
+            else{
+                for (let i = 0; i < rowsTH.length; i++) {
+                    const cells = rowsTH[i].cells;
+                    const time = cells[0].textContent;
+                    const location = cells[1].textContent;
+                    const parameter = cells[2].textContent;
+                    const value = cells[3].textContent;
+                    const threshold = cells[4].textContent;
+
+                    // 在Parameter前换行，并设置加粗红色格式
+                    messageMainA += `Time: ${time}, Location: ${location}\nParameter: ${parameter}, Current Value: ${value}, Threshold: ${threshold}\n\n`;
+                }
+            }
+            // 收集光照和声音警报（修改部分）
+            const rowsLS = alertTbodyLS.rows;
+            if (rowsLS > 100){
+                for (let i = 0; i < 100; i++) {
+                    const cells = rowsLS[i].cells;
+                    const time = cells[0].textContent;
+                    const location = cells[1].textContent;
+                    const parameter = cells[2].textContent;
+                    const value = cells[3].textContent;
+                    const threshold = cells[4].textContent;
+
+                    // 在Parameter前换行，并设置加粗红色格式
+                    messageMainB += `Time: ${time}, Location: ${location}\nParameter: ${parameter}, Current Value: ${value}, Threshold: ${threshold}\n\n`;
+                }
+            }
+            else{
+                for (let i = 0; i < rowsLS.length; i++) {
+                    const cells = rowsLS[i].cells;
+                    const time = cells[0].textContent;
+                    const location = cells[1].textContent;
+                    const parameter = cells[2].textContent;
+                    const value = cells[3].textContent;
+                    const threshold = cells[4].textContent;
+
+                    // 在Parameter前换行，并设置加粗红色格式
+                    messageMainB += `Time: ${time}, Location: ${location}\nParameter: ${parameter}, Current Value: ${value}, Threshold: ${threshold}\n\n`;
+                }
+            }
+            // 收集表单数据
+            const templateParams = {
+                to_email: document.getElementById('to_email').value,
+                message_title_a: 'Temperature & Humidity Alert Records',
+                message_main_a: messageMainA,
+                message_title_b: 'Light & Sound Alert Records',
+                message_main_b: messageMainB
+            };
+
+            // 发送邮件（保持不变）
+            emailjs.send("service_ICgroupA09", "template_3dnudyl", templateParams)
+            .then(function (response) {
+                    console.log('Email sent successfully', response);
+                    statusElement.textContent = 'Email has been sent successfully!';
+                    statusElement.classList.add('bg-green-100', 'text-green-800');
+                    document.getElementById('emailForm').reset();
+                })
+            .catch(function (error) {
+                    console.log('Email failed to send', error);
+                    statusElement.textContent = 'Failed to send: ' + error.text;
+                    statusElement.classList.add('bg-red-100', 'text-red-800');
+                });
+        }
         </script>
     </main>
 
