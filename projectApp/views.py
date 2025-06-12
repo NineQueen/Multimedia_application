@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import Information,Event,Warning
+from .models import Information,Event,Warning,WarningMessage
 from django.urls import path
 from .app_form import LocationForm,EventForm,EventQuery
 from django.db.models import Avg,Max,Min,Count,FloatField
@@ -9,6 +9,28 @@ from django.http import JsonResponse
 from django.views import View
 import json
 from . import mqtt_iot,request
+from django.shortcuts import render
+from django.views.static import serve
+from django.conf import settings
+import os
+from django.http import HttpResponse, Http404
+from pathlib import Path
+
+
+
+def show_map(request):
+    """显示地图页面"""
+    return render(request, 'map/map.html')
+
+def get_map_image(request):
+    """直接从projectApp的模板目录返回地图图片"""
+    image_path = Path(settings.BASE_DIR) / 'projectApp' / 'templates' / 'map' / 'map.png'
+    
+    if not image_path.exists():
+        raise Http404("地图图片不存在")
+    
+    with open(image_path, 'rb') as f:
+        return HttpResponse(f.read(), content_type='image/png')
 # Create your views here.
 def tot_data_list(request):
     data_collected = Information.objects.all()
@@ -97,18 +119,18 @@ def check_valid(loc,begin_time,end_time):
         return False
     return True
 
-def log_event(request):
+def log_list(request):
     if "id" in request.GET:
-        print("check")
-        warning = Warning.objects.filter(id = int(request.GET["id"]))
-        context = {
-            "warning": warning
-        }
+        warning = Warning.objects.filter(id = int(request.GET["id"]))[0]
+        if "check" in request.GET:
+            print("check")
+            warning.status = True
+            warning.save()
+            return redirect(request.path+"?id={}".format(int(request.GET["id"])))
+        context = {"id":warning}
         return render(request,"projectApp/log_detail.html",context)
-    warning = Warning.objects.all()
-    context = {
-        "warning":warning
-    }
+    warnings = Warning.objects.order_by("status")
+    context = {"warning":warnings}
     return render(request,"projectApp/log_list.html",context)
 
 def add_event(request):
@@ -183,7 +205,7 @@ def add_event(request):
                     if name:
                         events = events.filter(name = name)
                     if not show_past:
-                        events = events.filter(end_time__gte = time)
+                        events = events.filter(begin_time__gte = time)
                     tot_events = []
                     for event in events:
                         this_event = {
@@ -297,6 +319,8 @@ def check_empty(loc,time):
     return event
 
 def navigation_page(request):
+    warning = Warning.objects.filter(status = False)
+    warning_tag = len(warning)
     all_result = get_series_data()
     location = Information.objects.values_list("loc").distinct().order_by("loc")
     locations = []
@@ -336,7 +360,7 @@ def navigation_page(request):
         "light":tot_light,
         "snd" : tot_snd,
     }
-    context = {"all":all_result,"locs":locations}
+    context = {"all":all_result,"locs":locations,"check":warning_tag}
     return render(request,"index.html",context)
 
 def environmental_monitoring_v3(request):

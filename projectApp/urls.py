@@ -8,5 +8,7 @@ urlpatterns = [
     path("eventlist",views.add_event),
     path('monitor', views.environmental_monitoring_v3, name='environmental_monitoring_v3'),
     path('api/events/', EventApiView.as_view(), name='event_api'),
-    path("log",views.log_event),
+    path('map/', views.show_map, name='map-view'),
+    path('map/image/', views.get_map_image, name='map-image'),
+    path("log",views.log_list)
 ]

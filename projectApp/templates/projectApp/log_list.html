@@ -237,6 +237,7 @@
 
       .data-table th,
       .data-table td {
+        min-width: 300px;
         padding: 1rem 1.25rem;
         vertical-align: middle;
         text-align: center;
@@ -398,10 +399,10 @@
                 <td>{{ entry.date_created|date:"Y-m-d H:i" }}</td>
                 {% if entry.status == True %}
                 <td>
-                  <span class="status-tag status-upcoming">Checked</span>
+                  <span class="status-tag status-ongoing">Checked</span>
                 </td>
                 {% elif entry.status == False %}
-                <td><span class="status-tag status-ongoing">Needs Check</span></td>
+                <td><span class="status-tag status-upcoming">Needs Check</span></td>
                 {% endif %}
               </tr>
               {% endfor %}

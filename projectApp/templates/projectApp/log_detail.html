@@ -418,7 +418,7 @@
   </head>
   <body>
     <!-- 头部区域 -->
-    <a href="javascript:history.back()" class="home-button" title="Back">
+    <a href="log" class="home-button" title="Back">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
     <header class="header">
@@ -475,6 +475,8 @@
             </div>
             {% endif %}
           </div>
+          {% if id.status == False %}
+          <a href="?id={{id.id}}&check=1">
           <div class="event-detail-item" >
             <div class="event-detail-icon">
               <i class="fa-solid fa-check"></i>
@@ -484,6 +486,8 @@
               <div class="event-detail-value">I have checked this warning massage</div>
             </div>
           </div>
+        </a>
+        {% endif %}
         </div>
       </div>
       <!-- 数据表格卡片 -->
@@ -506,15 +510,15 @@
               </tr>
             </thead>
             <tbody>
-              {% for entry in id.message %}
+              {% for entry in id.message.all %}
               <tr class="clickable-row">
-                <td>{{ entry.node_id }}</td>
-                <td>{{ entry.loc }}</td>
-                <td>{{ entry.temp }}</td>
-                <td>{{ entry.hum }}</td>
-                <td>{{ entry.light }}</td>
-                <td>{{ entry.snd }}</td>
-                <td>{{ entry.date_created|date:"Y-m-d H:i" }}</td>
+                <td>{{ entry.information.node_id }}</td>
+                <td>{{ entry.information.loc }}</td>
+                <td>{{ entry.information.temp }}</td>
+                <td>{{ entry.information.hum }}</td>
+                <td>{{ entry.information.light }}</td>
+                <td>{{ entry.information.snd }}</td>
+                <td>{{ entry.information.date_created|date:"Y-m-d H:i" }}</td>
                 <td>{{ entry.message|truncatechars:30 }}</td>
               </tr>
               {% endfor %}

@@ -27,7 +27,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # 替换为你的 SMTP 服务器
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tyzh.hk@gmail.com'  # 替换为你的邮箱
+EMAIL_HOST_PASSWORD = 'wccptaawohavbsiy'
 # Application definition
 
 INSTALLED_APPS = [

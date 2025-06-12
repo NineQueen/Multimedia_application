@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!-- projectApp/templates/map/map.html -->
+<html>
+<head>
+    <title>Classroom Map Navigation System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .map-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        .map-header {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #2c3e50;
+        }
+        .map-img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            display: block;
+            margin: 0 auto;
+        }
+        /* 红点样式 */
+        .location-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #ff4757;
+            border-radius: 50%;
+            border: 2px solid white;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .location-point:hover {
+            width: 16px;
+            height: 16px;
+            z-index: 10;
+        }
+        .point-label {
+            position: absolute;
+            background: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            white-space: nowrap;
+            transform: translate(10px, -50%);
+            display: none;
+        }
+        .location-point:hover .point-label {
+            display: block;
+        }
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .map-container {
+                padding: 15px;
+            }
+            .location-point {
+                width: 10px;
+                height: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <h1 class="map-header">Classroom Map Navigation System</h1>
+        
+        <!-- 地图容器 -->
+        <div style="position: relative;">
+            <!-- 两种引用方式任选其一 -->
+            <!-- 方式1：直接相对路径引用（适合开发环境） -->
+            <img id="campusMap" src="http://127.0.0.1:8000/map/image/" alt="校园地图" class="map-img">
+            
+            <!-- 方式2：通过Django视图获取（适合生产环境） -->
+            <!-- <img id="campusMap" src="{% url 'map-image' %}" alt="校园地图" class="map-img"> -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapImage = document.getElementById('campusMap');
+            
+            // 等待图片加载完成
+            mapImage.onload = function() {
+                const mapContainer = mapImage.parentElement;
+                const imgWidth = mapImage.width;
+                const imgHeight = mapImage.height;
+                
+                // 从image.png中提取的点位数据
+                const points = ['W311D-Z1', 'W311-H1', 'W311B', 'W311-H2', 'W311-H3',"W311D-Z2","W311A"];
+                
+                // 假设的坐标映射 (需要替换为实际坐标)
+                // 格式: {x: 水平位置比例(0-1), y: 垂直位置比例(0-1)}
+                const coordinates = {
+                    'W311-H1': {x: 0.50, y: 0.33},
+                    'W311D-Z1': {x: 0.467, y: 0.52},
+                    'W311D-Z2': {x: 0.425, y: 0.39},
+                    'W311-H2': {x: 0.50, y: 0.48},
+                    'W311-H3': {x: 0.59, y: 0.48},
+                    'W311B': {x: 0.534, y: 0.82},
+                    'W311A': {x: 0.587, y: 0.82}
+                };
+                
+                // 创建红点标记
+                points.forEach(pointId => {
+                    if (coordinates[pointId]) {
+                        const pointElement = document.createElement('div');
+                        pointElement.className = 'location-point';
+                        pointElement.style.left = `${coordinates[pointId].x * 100}%`;
+                        pointElement.style.top = `${coordinates[pointId].y * 100}%`;
+                        
+                        // 添加标签
+                        const label = document.createElement('span');
+                        label.className = 'point-label';
+                        label.textContent = pointId;
+                        pointElement.appendChild(label);
+                        
+                        // 点击事件
+                        pointElement.addEventListener('click', function() {
+                            window.location.href = `/dashboard/classroom?loc=${pointId}`;
+                            // 这里可以添加导航逻辑
+                        });
+                        
+                        mapContainer.appendChild(pointElement);
+                    }
+                });
+            };
+            
+            // 如果图片已经加载完成(缓存情况)
+            if (mapImage.complete) {
+                mapImage.onload();
+            }
+        });
+    </script>
+</body>
+</html>
+

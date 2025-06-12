@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
   <head>
-    <link rel="icon" href="{% static 'navi_icon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'navi_icon.ico' %}" type="image/x-icon" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+
     <title>Classroom environment monitoring system</title>
     <link
       rel="stylesheet"
@@ -293,6 +293,35 @@
       .toolbar {
         justify-content: center;
       }
+      .has-new {
+        background-color: #fffbe6;
+        border-left: 4px solid #faad14;
+        transition: all 0.3s;
+      }
+
+      .new-badge {
+        display: inline-block;
+        background-color: #00ffea91;
+        color: white;
+        font-size: 12px;
+        padding: 2px 6px;
+        border-radius: 12px;
+        margin-left: 8px;
+        vertical-align: middle;
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
     </style>
   </head>
   <body>
@@ -340,13 +369,17 @@
           </div>
         </a>
         <a href="log">
-        <div class="card temp toolbar">
-          <div class="card-header">
-            <div class="card-icon">
-              <i class="fa-solid fa-list"></i>
+          <div class="card temp toolbar">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fa-solid fa-list"></i>
+                </div>
+                {% if check > 0 %}
+                <h2 class="card-title">Data Log <span class="new-badge">{{check}}</span></h2>
+                {% else %}
+                <h2 class="card-title">Data Log</h2>
+                {% endif %}
             </div>
-            <h2 class="card-title">Data Log</h2>
-          </div>
         </div>
         </a>
       </div>
@@ -430,12 +463,42 @@
         </div>
       </a>
       <div class="classroom-list">
-        <h2 class="section-title">
-          <i class="fas fa-school"></i>Classroom Environment Status
-        </h2>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+          "
+        >
+          <h2 class="section-title">
+            <i class="fas fa-school"></i>Classroom Environment Status
+          </h2>
+          <a
+            href="map"
+            style="
+              background: rgba(255, 255, 255, 0.1);
+              padding: 8px 15px;
+              border-radius: 20px;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              transition: all 0.3s ease;
+              color: white;
+              text-decoration: none;
+            "
+          >
+            <i class="fas fa-map"></i> MAP
+          </a>
+        </div>
+
         <div class="classrooms">
           {% for i in locs%}
-          <div class="classroom-card" data-loc="{{i.env.loc}}" style="margin: auto; cursor: pointer">
+          <div
+            class="classroom-card"
+            data-loc="{{i.env.loc}}"
+            style="margin: auto; cursor: pointer"
+          >
             <h3 class="classroom-name">
               <i class="fas fa-chalkboard"></i>{{i.env.loc}}
             </h3>
@@ -502,88 +565,88 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          document.querySelectorAll('.classroom-card').forEach(card => {
-              card.addEventListener('click', () => {
-              const loc = card.dataset.loc;
-            window.location.href = `dashboard/classroom?loc=${loc}`;
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.classroom-card').forEach(card => {
+            card.addEventListener('click', () => {
+            const loc = card.dataset.loc;
+          window.location.href = `dashboard/classroom?loc=${loc}`;
+        });
+      });
+          document.querySelectorAll('.clickable-row').forEach(div => {
+              div.addEventListener('click', function(event) {
+                  console.log("check");
+                  event.stopPropagation(); // 阻止冒泡
+                  const eventId = this.getAttribute('data-id');
+                  if (eventId) {
+                      window.location.href = `/eventlist?id=${eventId}`;
+                  }
+              });
           });
-        });
-            document.querySelectorAll('.clickable-row').forEach(div => {
-                div.addEventListener('click', function(event) {
-                    console.log("check");
-                    event.stopPropagation(); // 阻止冒泡
-                    const eventId = this.getAttribute('data-id');
-                    if (eventId) {
-                        window.location.href = `/eventlist?id=${eventId}`;
-                    }
-                });
-            });
-        });
-              function updata_data(){
-               // Temperature
-                   document.querySelectorAll('.temp-status').forEach(status => {
-                       const all_temp = {{all.temp}};
-                       console.log({{all.temp}});
-                       if (all_temp>30) {
-                           status.className = 'card-status status-warning';
-                           status.textContent = 'Hot';
-                       } else if(all_temp< 18){
-                           status.className = 'card-status status-low';
-                           status.textContent = 'Cold';
-                       }else{
-                            status.className = 'card-status status-normal';
-                           status.textContent = 'Normal';
-                       }
-                   });
-                   //Hum
-                   document.querySelectorAll('.hum-status').forEach(status => {
-                       const all_temp = {{all.hum}};
-                       if (all_temp>80) {
-                           status.className = 'card-status status-warning';
-                           status.textContent = 'High';
-                       } else if(all_temp< 30){
-                           status.className = 'card-status status-low';
-                           status.textContent = 'Low';
-                       }else{
-                            status.className = 'card-status status-normal';
-                           status.textContent = 'Optimal';
-                       }
-                   });
-                   document.querySelectorAll('.snd-status').forEach(status => {
-                       const all_temp = {{all.snd}};
-                       if (all_temp>70) {
-                           status.className = 'card-status status-warning';
-                           status.textContent = 'Loud';
-                       } else if(all_temp< 50){
-                           status.className = 'card-status status-low';
-                           status.textContent = 'Quiet';
-                       }else{
-                            status.className = 'card-status status-normal';
-                           status.textContent = 'Moderate';
-                       }
-                   });
-                   document.querySelectorAll('.light-status').forEach(status => {
-                       const all_temp = {{all.light}};
-                       if (all_temp>90) {
-                           status.className = 'card-status status-warning';
-                           status.textContent = 'Bright';
-                       } else if(all_temp< 30){
-                           status.className = 'card-status status-low';
-                           status.textContent = 'Off';
-                       }else{
-                            status.className = 'card-status status-normal';
-                           status.textContent = 'Moderate';
-                       }
-                   });
-              }
-              updata_data();
-              window.onload = function(){
-                   setTimeout(function(){
-                       console.log("refresh")
-                       location.reload();
-                   },5000)
-              };
-            </script>
-        </body>
+      });
+            function updata_data(){
+             // Temperature
+                 document.querySelectorAll('.temp-status').forEach(status => {
+                     const all_temp = {{all.temp}};
+                     console.log({{all.temp}});
+                     if (all_temp>30) {
+                         status.className = 'card-status status-warning';
+                         status.textContent = 'Hot';
+                     } else if(all_temp< 18){
+                         status.className = 'card-status status-low';
+                         status.textContent = 'Cold';
+                     }else{
+                          status.className = 'card-status status-normal';
+                         status.textContent = 'Normal';
+                     }
+                 });
+                 //Hum
+                 document.querySelectorAll('.hum-status').forEach(status => {
+                     const all_temp = {{all.hum}};
+                     if (all_temp>80) {
+                         status.className = 'card-status status-warning';
+                         status.textContent = 'High';
+                     } else if(all_temp< 30){
+                         status.className = 'card-status status-low';
+                         status.textContent = 'Low';
+                     }else{
+                          status.className = 'card-status status-normal';
+                         status.textContent = 'Optimal';
+                     }
+                 });
+                 document.querySelectorAll('.snd-status').forEach(status => {
+                     const all_temp = {{all.snd}};
+                     if (all_temp>70) {
+                         status.className = 'card-status status-warning';
+                         status.textContent = 'Loud';
+                     } else if(all_temp< 50){
+                         status.className = 'card-status status-low';
+                         status.textContent = 'Quiet';
+                     }else{
+                          status.className = 'card-status status-normal';
+                         status.textContent = 'Moderate';
+                     }
+                 });
+                 document.querySelectorAll('.light-status').forEach(status => {
+                     const all_temp = {{all.light}};
+                     if (all_temp>90) {
+                         status.className = 'card-status status-warning';
+                         status.textContent = 'Bright';
+                     } else if(all_temp< 30){
+                         status.className = 'card-status status-low';
+                         status.textContent = 'Off';
+                     }else{
+                          status.className = 'card-status status-normal';
+                         status.textContent = 'Moderate';
+                     }
+                 });
+            }
+            updata_data();
+            window.onload = function(){
+                 setTimeout(function(){
+                     console.log("refresh")
+                     location.reload();
+                 },5000)
+            };
+    </script>
+  </body>
 </html>

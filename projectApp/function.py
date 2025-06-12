@@ -6,7 +6,7 @@ def AlertClassifier(temperature, humidity, light, sound, roomStatus):
     message = ''
     # 阈值
     NightLight = 60
-    EmptyRoomSound = 30
+    EmptyRoomSound = 50
     RoomSound = 100
     Fire = 35
     # get当前时间
@@ -23,22 +23,18 @@ def AlertClassifier(temperature, humidity, light, sound, roomStatus):
         atNight = True
     # 0 忘关灯
     if atNight and light >= NightLight:
-        message += 'Forgot to Turn Off the Light'
+        message += 'Light on'
     # 1 空房间吵 或 2 不管是不是空但特别吵
     if (roomStatus == 0 and sound >= EmptyRoomSound) or sound >= RoomSound:
         if len(message) != 0:
             message += '\n'
-        message += 'Too Noisy'
+        message += 'Noise'
     # 3 火了
     if temperature >= Fire:
         if len(message) != 0:
             message += '\n'
-        message += 'On Fire'
+        message += 'Fire'
     # 4 水了
-    if humidity > 100:
-        if len(message) != 0:
-            message += '\n'
-        message += 'Too Wet'
 
     if len(message) == 0: # 没异常
         res['type'] = 0
