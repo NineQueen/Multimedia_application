@@ -33,7 +33,7 @@ class LocationForm(forms.Form):
 class EventQuery(forms.Form):
     show_past = forms.BooleanField(
         required= False,
-        label="Show past events",
+        label="Display finished events",
         initial= True
     )
     loc = forms.ChoiceField(

@@ -5,8 +5,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Location Sensor Dashboard</title>
     <link rel="icon" href="{% static 'cal.ico' %}" type="image/x-icon" />
+    <title>Location Sensor Dashboard</title>
     <!-- 引入外部资源 -->
     <link
       href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"
@@ -34,20 +34,20 @@
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.27/dist/sweetalert2.all.min.js"></script>
-    <!-- 自定义样式 -->
+    <!-- 自定义样�? -->
     <style>
       a {
         text-decoration: none;
         color: inherit;
       }
       :root {
-        /* 主色调 - 蓝色系 */
+        /* 主色�? - 蓝色�? */
         --primary-color: #4361ee;
         --secondary-color: #4080ff;
         --light-blue: #e8f3ff;
         --dark-blue: #0e42d2;
 
-        /* 灰蓝色背景 */
+        /* 灰蓝色背�? */
         --bg-light: #333;
         --bg-medium: #3f37c9;
         --bg-dark: #c9d8e8;
@@ -94,7 +94,7 @@
         color: rgba(255, 255, 255, 0.8);
       }
 
-      /* 主内容 */
+      /* 主容�? */
       .main-container {
         max-width: 1400px;
         margin: 0 auto;
@@ -242,7 +242,7 @@
         text-align: center;
       }
 
-      /* 表格数据条纹 */
+      /* 表格数据条带�? */
       .data-table tbody tr:nth-of-type(even) {
         background-color: rgba(201, 216, 232, 0.2);
       }
@@ -251,7 +251,7 @@
         background-color: rgba(22, 93, 255, 0.05);
       }
 
-      /* 响应式设置 */
+      /* 响应式设�? */
       @media (max-width: 768px) {
         .header {
           padding: 1.5rem 0;
@@ -271,6 +271,7 @@
           font-size: 0.9rem;
         }
       }
+
       /* 页脚 */
       .footer {
         margin-top: 3rem;
@@ -280,7 +281,6 @@
         font-size: 0.9rem;
         background-color: var(--bg-medium);
       }
-
       .home-button {
         position: absolute;
         top: 1.5rem;
@@ -306,45 +306,6 @@
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
       }
 
-      /* 事件详情卡片 */
-      .event-detail-card {
-        margin-bottom: 2rem;
-      }
-
-      .event-detail-item {
-        display: flex;
-        align-items: center;
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--border-color);
-      }
-
-      .event-detail-item:last-child {
-        border-bottom: none;
-      }
-
-      .event-detail-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: var(--light-blue);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--primary-color);
-        margin-right: 1rem;
-      }
-
-      .event-detail-label {
-        font-weight: 500;
-        color: var(--text-light);
-        min-width: 120px;
-      }
-
-      .event-detail-value {
-        font-size: 1.1rem;
-        font-weight: 500;
-      }
-
       @media (max-width: 768px) {
         .sensor-overview {
           grid-template-columns: 1fr;
@@ -367,20 +328,6 @@
           width: 40px;
           height: 40px;
           font-size: 1.2rem;
-        }
-
-        .event-detail-item {
-          flex-direction: column;
-          align-items: flex-start;
-          padding: 0.75rem 0;
-        }
-
-        .event-detail-icon {
-          margin-bottom: 0.5rem;
-        }
-
-        .event-detail-label {
-          margin-bottom: 0.25rem;
         }
       }
       .status-tag {
@@ -418,8 +365,8 @@
   </head>
   <body>
     <!-- 头部区域 -->
-    <a href="javascript:history.back()" class="home-button" title="Main Page">
-      <i class="fa-solid fa-arrow-left"></i>
+    <a href="/" class="home-button" title="Home">
+      <i class="fas fa-home"></i>
     </a>
     <header class="header">
       <div class="main-container">
@@ -430,128 +377,31 @@
 
     <!-- 主内容区 -->
     <main class="main-container">
-      <!-- 事件详情卡片 -->
-      <div class="card event-detail-card">
-        <div class="card-header">
-          <h3 style="color: white">
-            <i class="fa fa-info-circle mr-2"></i> Event Details
-          </h3>
-        </div>
-        <div class="card-body">
-          <div class="event-detail-item">
-            <div class="event-detail-icon">
-              <i class="fa fa-tag"></i>
-            </div>
-            <div>
-              <div class="event-detail-label">Name</div>
-              <div class="event-detail-value">{{ id.name }}</div>
-            </div>
-          </div>
-
-          <div class="event-detail-item">
-            <div class="event-detail-icon">
-              <i class="fa fa-map-marker"></i>
-            </div>
-            <div>
-              <div class="event-detail-label">Location</div>
-              <div class="event-detail-value">{{ id.loc }}</div>
-            </div>
-          </div>
-          <div class="event-detail-item">
-            <div class="event-detail-icon">
-              <i class="fa-solid fa-chalkboard-user"></i>
-            </div>
-            <div>
-              <div class="event-detail-label">Instructor</div>
-              <div class="event-detail-value">{{ id.instructor }}</div>
-            </div>
-          </div>
-
-          <div class="event-detail-item">
-            <div class="event-detail-icon">
-              <i class="fa fa-clock-o"></i>
-            </div>
-            <div>
-              <div class="event-detail-label">Begin Time</div>
-              <div class="event-detail-value">
-                {{ id.begin_time|date:"Y-m-d H:i" }}
-              </div>
-            </div>
-          </div>
-
-          <div class="event-detail-item">
-            <div class="event-detail-icon">
-              <i class="fa fa-clock-o"></i>
-            </div>
-            <div>
-              <div class="event-detail-label">End Time</div>
-              <div class="event-detail-value">
-                {{ id.end_time|date:"Y-m-d H:i" }}
-              </div>
-            </div>
-          </div>
-          <div class="event-detail-item">
-            <div class="event-detail-icon">
-              <i class="fa-solid fa-circle-info"></i>
-            </div>
-            <div>
-              <div class="event-detail-label">Description</div>
-              <div class="event-detail-value">{{ id.Description }}</div>
-            </div>
-          </div>
-          <div class="event-detail-item">
-            <div class="event-detail-icon">
-              <i class="fa-solid fa-circle-info"></i>
-            </div>
-            {% if id.status != "Upcoming" %}
-            <a href="/dashboard/history?id={{id.id}}">
-            <div>
-              <div class="event-detail-label">Status</div>
-              <div class="event-detail-value">{{ id.status }}</div>
-            </div>
-            </a>
-            {% else %}
-
-            {% endif %}
-          </div>
-        </div>
-      </div>
-
       <!-- 数据表格卡片 -->
       <div class="card">
         <div class="card-header" style="color: white">
-          <h3><i class="fa fa-table mr-2"></i> Event Readings</h3>
+          <h3><i class="fa fa-table mr-2"></i> Warning Readings</h3>
         </div>
         <div class="table-responsive">
           <table class="table data-table table-hover">
             <thead>
               <tr>
-                <th>Name</th>
                 <th>Location</th>
-                <th>Instructor</th>
                 <th>Begin Time</th>
-                <th>End Time</th>
-                <th>Description</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {% for entry in entrys %}
+              {% for entry in warning %}
               <tr class="clickable-row" data-id="{{ entry.id }}">
-                <td>{{ entry.name }}</td>
                 <td>{{ entry.loc }}</td>
-                <td>{{ entry.instructor }}</td>
-                <td>{{ entry.begin_time|date:"Y-m-d H:i" }}</td>
-                <td>{{ entry.end_time|date:"Y-m-d H:i" }}</td>
-                <td>{{ entry.Description|truncatechars:30 }}</td>
-                {% if entry.status == "Upcoming" %}
+                <td>{{ entry.date_created|date:"Y-m-d H:i" }}</td>
+                {% if entry.status == True %}
                 <td>
-                  <span class="status-tag status-upcoming">Upcoming</span>
+                  <span class="status-tag status-upcoming">Checked</span>
                 </td>
-                {% elif entry.status == "Ongoing" %}
-                <td><span class="status-tag status-ongoing">Ongoing</span></td>
-                {% elif entry.status == "Finish" %}
-                <td><span class="status-tag status-finish">Finished</span></td>
+                {% elif entry.status == False %}
+                <td><span class="status-tag status-ongoing">Needs Check</span></td>
                 {% endif %}
               </tr>
               {% endfor %}
@@ -572,17 +422,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // 表格行点击事件
         document.querySelectorAll(".clickable-row").forEach((row) => {
           row.addEventListener("click", function () {
             const eventId = this.getAttribute("data-id");
             if (eventId) {
-              window.location.href = `/eventlist?id=${eventId}`;
+              window.location.href = `/log?id=${eventId}`;
             }
           });
         });
-
-        // 错误消息提示
         const type = "{{ type }}";
         const errorMessage = "{{ error_message|default:'' }}";
         if (type === "fail") {

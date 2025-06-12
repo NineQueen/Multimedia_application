@@ -6,7 +6,7 @@ mqtt_broker = "ia.ic.polyu.edu.hk"
 mqtt_port = 1883
 mqtt_qos = 1
 mqtt_topic = "iot/request-A09"
-mqtt_client = mqtt.Client("Request-Zhuv1")
+mqtt_client = mqtt.Client("Request-Zhuv2")
 mqtt_client.connect(mqtt_broker, mqtt_port)
 mqtt_client.subscribe(mqtt_topic, mqtt_qos)
 

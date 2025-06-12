@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import Information,Event
+from .models import Information,Event,Warning
 from django.urls import path
 from .app_form import LocationForm,EventForm,EventQuery
 from django.db.models import Avg,Max,Min,Count,FloatField
@@ -97,6 +97,20 @@ def check_valid(loc,begin_time,end_time):
         return False
     return True
 
+def log_event(request):
+    if "id" in request.GET:
+        print("check")
+        warning = Warning.objects.filter(id = int(request.GET["id"]))
+        context = {
+            "warning": warning
+        }
+        return render(request,"projectApp/log_detail.html",context)
+    warning = Warning.objects.all()
+    context = {
+        "warning":warning
+    }
+    return render(request,"projectApp/log_list.html",context)
+
 def add_event(request):
     #Event.objects.all().delete()
     location = Information.objects.values_list("loc").distinct().order_by("loc")
@@ -169,7 +183,7 @@ def add_event(request):
                     if name:
                         events = events.filter(name = name)
                     if not show_past:
-                        events = events.filter(begin_time__gte = time)
+                        events = events.filter(end_time__gte = time)
                     tot_events = []
                     for event in events:
                         this_event = {
@@ -365,7 +379,7 @@ class EventApiView(View):
                 # 添加更多事件详情
                 events_data.append({
                     'id': event.id,
-                    'title': f"{event.name} ({event.instructor})",
+                    'title': f"{event.name}",
                     'start': event.begin_time.isoformat(),
                     'end': event.end_time.isoformat(),
                     'extendedProps': {

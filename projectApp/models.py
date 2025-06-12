@@ -17,6 +17,29 @@ class Information(models.Model):
     class Meta:
         verbose_name_plural = "Information"
 
+class WarningMessage(models.Model):
+    information = models.OneToOneField(
+        Information,
+        on_delete=models.CASCADE,
+        related_name="warning",
+        verbose_name="warning"
+    )
+    message = models.TextField(blank=True,null=True)
+    def __str__(self) -> str:
+        return "WarningMessage #{}".format(self.id)
+    class Meta:
+        verbose_name_plural = "WarningMessage"
+
+class Warning(models.Model):
+    message = models.ManyToManyField(
+        WarningMessage,
+        blank= True
+    )
+    loc = models.CharField(max_length=6)
+    date_created = models.DateTimeField(auto_now_add=True)
+    status = models.BooleanField(default=False)
+
+
 class Event(models.Model):
     name = models.CharField(max_length=10)
     begin_time = models.DateTimeField()
