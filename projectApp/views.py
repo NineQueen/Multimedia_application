@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views import View
 import json
-from . import mqtt_iot,request
+#from . import mqtt_iot,request
 from django.shortcuts import render
 from django.views.static import serve
 from django.conf import settings
@@ -145,6 +145,7 @@ def add_event(request):
     tot_events = []
     time = timezone.now()
     for event in events:
+        ans = get_series_data(None,event.loc,event.begin_time,event.end_time)
         this_event = {
             "id":event.id,
             "name":event.name,
@@ -153,6 +154,7 @@ def add_event(request):
             "begin_time":event.begin_time,
             "end_time":event.end_time,
             "Description":event.Description,
+            "ans":ans
         }
         if event.end_time < time:
                 this_event["status"] = "Finish"
@@ -208,6 +210,7 @@ def add_event(request):
                         events = events.filter(begin_time__gte = time)
                     tot_events = []
                     for event in events:
+                        ans = get_series_data(None,event.loc,event.begin_time,event.end_time)
                         this_event = {
                             "id":event.id,
                             "name":event.name,
@@ -216,6 +219,7 @@ def add_event(request):
                             "begin_time":event.begin_time,
                             "end_time":event.end_time,
                             "Description":event.Description,
+                            "ans":ans,
                         }
                         if event.end_time < time:
                                 this_event["status"] = "Finish"

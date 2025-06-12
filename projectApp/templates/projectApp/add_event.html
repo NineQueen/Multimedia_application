@@ -502,6 +502,10 @@
                 <th>End Time</th>
                 <th>Description</th>
                 <th>Status</th>
+                <th>Temp</th>
+                <th>Hum</th>
+                <th>Snd</th>
+                <th>Light</th>
               </tr>
             </thead>
             <tbody>
@@ -521,6 +525,17 @@
                 <td><span class="status-tag status-ongoing">Ongoing</span></td>
                 {% elif entry.status == "Finish" %}
                 <td><span class="status-tag status-finish">Finished</span></td>
+                {% endif %}
+                {% if entry.status == "Upcoming" %}
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                {% else %}
+                <td>{{ entry.ans.temp.avg }}</td>
+                <td>{{ entry.ans.hum.avg }}</td>
+                <td>{{ entry.ans.snd.avg }}</td>
+                <td>{{ entry.ans.light.avg }}</td>
                 {% endif %}
               </tr>
               {% endfor %}
