@@ -4,6 +4,7 @@ from django.core import serializers
 from projectApp.models import Information,Event
 from projectApp.views import get_series_data,check_empty
 from django.utils import timezone
+
 # Create your views here.
 def index(request):
     data = get_series_data()

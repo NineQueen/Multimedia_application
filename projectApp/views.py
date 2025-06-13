@@ -3,6 +3,7 @@ from .models import Information,Event,Warning,WarningMessage
 from django.urls import path
 from .app_form import LocationForm,EventForm,EventQuery
 from django.db.models import Avg,Max,Min,Count,FloatField
+from datetime import timedelta
 from django.db.models.functions import Round
 from django.utils import timezone
 from django.http import JsonResponse
@@ -15,7 +16,7 @@ from django.conf import settings
 import os
 from django.http import HttpResponse, Http404
 from pathlib import Path
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def show_map(request):
@@ -101,13 +102,22 @@ def select_data_list(request):
     else:
         form = LocationForm()
         if "clear" in request.GET:
-            form.reset()
+            form.reset().order_by("-date_created")
             context = {"form":form,"select_data":data_selected}
             return redirect(request.path)
         form.fields["location"].choices = locations
         form.fields["node_id"].choices = node_id_list
-    context = get_series_data()
-    context["raw_data"] = context["raw_data"].order_by("-date_created")
+    cpage = get_series_data()
+    paginator = Paginator(cpage["raw_data"].order_by("-date_created"),50)
+    page = request.GET.get("page")
+    try:
+        raw_data = paginator.page(page)
+    except PageNotAnInteger:
+        raw_data = paginator.page(1)
+    except EmptyPage:
+        raw_data = paginator.page(paginator.num_pages)
+    context = dict()
+    context["raw_data"] = raw_data
     context["form"] = form
     return render(request,"projectApp/select_data_list.html",context)
 
@@ -368,7 +378,8 @@ def navigation_page(request):
     return render(request,"index.html",context)
 
 def environmental_monitoring_v3(request):
-    data = Information.objects.all().order_by('-date_created')
+    one_day_ago = timezone.now() - timedelta(days=1)
+    data = Information.objects.filter(date_created__gte = one_day_ago).order_by('-date_created')
     return render(request, 'projectApp/env-monitor-v3.html', {
         'data': data
     })
