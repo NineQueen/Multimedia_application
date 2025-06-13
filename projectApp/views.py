@@ -34,6 +34,11 @@ def get_map_image(request):
         return HttpResponse(f.read(), content_type='image/png')
 # Create your views here.
 def tot_data_list(request):
+    Information.objects.filter(loc = "W411").delete()
+    Information.objects.filter(loc = "W412").delete()
+    Warning.objects.all().delete()
+    WarningMessage.objects.all().delete()
+    Information.objects.filter(temp = 100).delete()
     data_collected = Information.objects.all()
     context = {"tot_data":data_collected}
     return render(request,"projectApp/tot_data_list.html",context)
@@ -77,6 +82,9 @@ def select_data_list(request):
     node_id = Information.objects.values_list("node_id").distinct().order_by("node_id")
     node_id_list = []
     node_id_list.append((None,"All"))
+    form = LocationForm()
+    form.fields['location'].choices = locations
+    form.fields["node_id"].choices = node_id_list
     data_selected = Information.objects.all()
     for i in location:
         locations.append((i[0],i[0]))
@@ -95,14 +103,16 @@ def select_data_list(request):
             begin_time = form.cleaned_data.get("begin_time")
             # query the end time
             end_time = form.cleaned_data.get("end_time")
-            context = get_series_data(select_node_id,select_location,begin_time,end_time)
-            context["raw_data"] = context["raw_data"].order_by("-date_created")
+            raw_data = get_series_data(select_node_id,select_location,begin_time,end_time)
+            context = dict()
+            context["raw_data"] = raw_data["raw_data"].order_by("-date_created")
             context["form"] = form
             return render(request,"projectApp/select_data_list.html",context)
     else:
         form = LocationForm()
         if "clear" in request.GET:
-            form.reset().order_by("-date_created")
+            form.reset()
+            del request.session['form_data']
             context = {"form":form,"select_data":data_selected}
             return redirect(request.path)
         form.fields["location"].choices = locations
@@ -205,6 +215,7 @@ def add_event(request):
                     end_time = formQ.cleaned_data.get("end_time")
                     instructor = formQ.cleaned_data["instructor"]
                     name = formQ.cleaned_data['name']
+                    time = timezone.now()
                     show_past = formQ.cleaned_data.get("show_past")
                     if loc:
                         events = events.filter(loc = loc)
@@ -217,7 +228,7 @@ def add_event(request):
                     if name:
                         events = events.filter(name = name)
                     if not show_past:
-                        events = events.filter(begin_time__gte = time)
+                        events = events.filter(end_time__gte = time)
                     tot_events = []
                     for event in events:
                         ans_tot = get_series_data(None,event.loc,event.begin_time,event.end_time)
@@ -240,7 +251,6 @@ def add_event(request):
                         tot_events.append(this_event)
                     context["entrys"] = tot_events
             if "clear" in request.GET:
-                print("path",request.path)
                 return redirect(request.path+"?id={}".format(request.GET["id"]))
             context["formQ"] = formQ
             return render(request,"projectApp/event_list.html",context)
@@ -293,7 +303,7 @@ def add_event(request):
                         if name:
                             events = events.filter(name = name)
                         if not show_past:
-                            events = events.filter(begin_time__gte = time)
+                            events = events.filter(end_time__gte = time)
                         tot_events = []
                         for event in events:
                             ans_tot = get_series_data(None,event.loc,event.begin_time,event.end_time)
