@@ -540,10 +540,14 @@
                                     <i class="fa-solid fa-info"></i>
                                 </div>
                                 <div class="sensor-title">Status</div>
-                                {% if status == True %}
+                                {% if status == "Empty" %}
                                 <div class="sensor-value status-value" id="snd-value">Empty</div>
-                                {% else %}
+                                <div class="sensor-status" id="status-status">No Upcoming Event</div>
+                                {% elif status == "Using" %}
                                 <div class="sensor-value status-value" id="snd-value">Using</div>
+                                <div class="sensor-status" id="status-status">{{event.name}}</div>
+                                {% elif status == "Upcoming" %}
+                                <div class="sensor-value status-value" id="snd-value">Upcoming</div>
                                 <div class="sensor-status" id="status-status">{{event.name}}</div>
                                 {% endif %}
                             </div>

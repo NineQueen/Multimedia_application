@@ -74,7 +74,7 @@ ID = "A09"
 mqtt_broker = "ia.ic.polyu.edu.hk"
 mqtt_port = 1883
 mqtt_qos = 1
-mqtt_topic = "iot/sensor-A"
+mqtt_topic = "iot/test-A"
 def check_empty(loc,time):
     event = Event.objects.filter(loc = loc)
     event = event.filter(begin_time__lte = time)
@@ -114,7 +114,7 @@ def mqtt_on_message(client, userdata,msg):
                 'Type': res["message"]
             }
             send_custom_email(
-                subject="⚠️ 异常检测警报",
+                subject="⚠️ Warning detected",
                 to_emails=["owen.zhx@outlook.com"],
                 template_name="projectApp/alert_email.html",  # 替换为实际的模板路径
                 context=context
