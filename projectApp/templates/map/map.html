@@ -1,15 +1,17 @@
+{% load static %}
 <!DOCTYPE html>
 <!-- projectApp/templates/map/map.html -->
 <html>
 <head>
     <title>Classroom Map Navigation System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="{% static 'map.ico' %}" type="image/x-icon" />
     <style>
         :root {
             --primary-color: #3498db;
             --secondary-color: #2c3e50;
             --accent-color: #ff4757;
-            --light-gray: #5580c0;
+            --light-gray: #0c2461;
             --medium-gray: #e0e0e0;
             --dark-gray: #7f8c8d;
             --white: #ffffff;
@@ -40,7 +42,7 @@
         .map-header {
             text-align: center;
             margin-bottom: 25px;
-            color: #1f4163;
+            color: white;
         }
         .map-img {
             max-width: 100%;
