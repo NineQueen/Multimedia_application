@@ -4,11 +4,11 @@ This is the **multimedia application** developed by Group 9 TRN-A 2025/6/13
 
 | Group Mates  | Student ID |
 | ----- | -----|
-| ZHU Haoxing  | 24099372d |
-| ZHEN Kaiwen  | 24100095d |
-| ZHANG Tianyi | 24098849d |
-| YE Yutao     | 24100332d |
-| LIU Huaiyu   | 24133246d |
+| ZHU Hx  | ******72d |
+| ZHEN Kw  | ******95d |
+| ZHANG Ty | ******49d |
+| YE Yt     | ******32d |
+| LIU Hy   | ******46d |
 ---
 ## Main Features
 `Event`: Record and create the classroom usage and appiontment
