@@ -22,7 +22,7 @@ This is the **multimedia application** developed by Group 9 TRN-A 2025/6/13
 `Dashboard`: Show the environment records of tot/classroom/finish or onging events
 
 ---
-## github link
+## Github link
 [NineQueen/Multimedia_application](https://github.com/NineQueen/Multimedia_application/tree/main)
 
 Remember to give me a star for the hard effort, thank you.
