@@ -1,4 +1,4 @@
-# Multimedia Application
+# [Multimedia Application](http://zhuhao.xin)
 
 This is the **multimedia application** developed by Group 9 TRN-A 2025/6/13
 
@@ -27,4 +27,3 @@ This is the **multimedia application** developed by Group 9 TRN-A 2025/6/13
 
 Remember to give me a star for the hard effort, thank you.
 
-## [View Online](http://zhuhao.xin)
