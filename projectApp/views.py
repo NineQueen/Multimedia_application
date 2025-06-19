@@ -133,7 +133,6 @@ def select_data_list(request):
         filter_params = request.GET.copy()
         filter_params.pop("page",None)
         filter_params  = filter_params.urlencode
-        print(filter_params)
     except BaseException as e:
         filter_params = None
         print("Error!",e)
