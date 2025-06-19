@@ -534,7 +534,7 @@
                                 <div class="sensor-value sound-value" id="snd-value">--dB</div>
                                 <div class="sensor-status" id="snd-status">Awaiting data...</div>
                             </div>
-                            <a href="/eventlist?id={{event.id}}">
+                            {% if status == "Empty" %}
                             <div class="card sensor-card status">
                                 <div class="sensor-icon status-icon">
                                     <i class="fa-solid fa-info"></i>
@@ -551,7 +551,23 @@
                                 <div class="sensor-status" id="status-status">{{event.name}}</div>
                                 {% endif %}
                             </div>
+                            {% else %}
+                            <a href="/eventlist?id={{event.id}}">
+                            <div class="card sensor-card status">
+                                <div class="sensor-icon status-icon">
+                                    <i class="fa-solid fa-info"></i>
+                                </div>
+                                <div class="sensor-title">Status</div>
+                                {% if status == "Using" %}
+                                <div class="sensor-value status-value" id="snd-value">Using</div>
+                                <div class="sensor-status" id="status-status">{{event.name}}</div>
+                                {% elif status == "Upcoming" %}
+                                <div class="sensor-value status-value" id="snd-value">Upcoming</div>
+                                <div class="sensor-status" id="status-status">{{event.name}}</div>
+                                {% endif %}
+                            </div>
                             </a>
+                            {% endif %}
                         </div>
                         <div class="text-center mt-3">
                             <div class="last-updated">
