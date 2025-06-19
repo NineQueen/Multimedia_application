@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views import View
 import json
-from . import mqtt_iot,request
+#from . import mqtt_iot,request
 from django.shortcuts import render
 from django.views.static import serve
 from django.conf import settings
@@ -90,8 +90,12 @@ def select_data_list(request):
         locations.append((i[0],i[0]))
     for i in node_id:
         node_id_list.append((i[0],i[0]))
-    if request.method == "POST":
-        form = LocationForm(request.POST)
+    if request.method == "GET":
+        if "clear" in request.GET:
+            form.reset()
+            context = {"form":form,"select_data":data_selected}
+            return redirect(request.path)
+        form = LocationForm(request.GET)
         form.fields['location'].choices = locations
         form.fields["node_id"].choices = node_id_list
         if form.is_valid():
@@ -107,17 +111,13 @@ def select_data_list(request):
             context = dict()
             context["raw_data"] = raw_data["raw_data"].order_by("-date_created")
             context["form"] = form
-            return render(request,"projectApp/select_data_list.html",context)
-    else:
-        form = LocationForm()
-        if "clear" in request.GET:
-            form.reset()
-            del request.session['form_data']
-            context = {"form":form,"select_data":data_selected}
-            return redirect(request.path)
+            #return render(request,"projectApp/select_data_list.html",context)
         form.fields["location"].choices = locations
         form.fields["node_id"].choices = node_id_list
-    cpage = get_series_data()
+    if form.is_valid():
+        cpage =  raw_data
+    else:
+        cpage = get_series_data()
     paginator = Paginator(cpage["raw_data"].order_by("-date_created"),50)
     page = request.GET.get("page")
     try:
@@ -129,6 +129,15 @@ def select_data_list(request):
     context = dict()
     context["raw_data"] = raw_data
     context["form"] = form
+    try:
+        filter_params = request.GET.copy()
+        filter_params.pop("page",None)
+        filter_params  = filter_params.urlencode
+        print(filter_params)
+    except BaseException as e:
+        filter_params = None
+        print("Error!",e)
+    context["other_params"] = filter_params
     return render(request,"projectApp/select_data_list.html",context)
 
 def check_valid(loc,begin_time,end_time):

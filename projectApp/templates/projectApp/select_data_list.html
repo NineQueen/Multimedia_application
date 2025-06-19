@@ -351,8 +351,7 @@
                 <h3 style="color:white"><i class="fa fa-filter mr-2"></i>   Data Filters</h3>
             </div>
             <div class="card-body">
-                <form action="" method="post" id="select_form">
-                    {% csrf_token %}
+                <form action="" method="get" id="select_form">
                     <div class="row">
                         <div class="col-md-6 form-group">
                             {{ form.location.label_tag }}
@@ -444,13 +443,13 @@
                                 </li>
                             {% elif num > raw_data.number|add:'-3' and num < raw_data.number|add:'3' %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+                                    <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}&{{ other_params }}">{{ num }}</a>
                                 </li>
                             {% endif %}
                         {% endfor %}
                         <li class="page-item {% if not raw_data.has_next %}disabled{% endif %}">
                             {% if raw_data.has_next %}
-                                <a class="page-link" href="?page={{ raw_data.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                                <a class="page-link" href="?page={{ raw_data.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}&{{ other_params }}" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             {% else %}
@@ -460,7 +459,7 @@
                             {% endif %}
                         </li>
                         <li class="page-item {% if not raw_data.has_next %}disabled{% endif %}">
-                            <a class="page-link" href="?page={{ raw_data.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Last">
+                            <a class="page-link" href="?page={{ raw_data.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}&{{ other_params }}" aria-label="Last">
                                 <span aria-hidden="true">&raquo;&raquo;</span>
                             </a>
                         </li>
