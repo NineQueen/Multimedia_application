@@ -56,7 +56,7 @@ def get_series_data(input_node_id = None,input_loc = None,input_begin_time = Non
         if input_end_time:
             data_selected = data_selected.filter(date_created__lte = input_end_time)
     except BaseException as e:
-        print("Error at get_series_data()",e)
+        #print("Error at get_series_data()",e)
         return get_series_data()
     temp_result = data_selected.aggregate(avg = Round(Avg("temp", output_field=FloatField())),max = Max("temp"),min = Min("temp"))
     hum_result = data_selected.aggregate(avg = Round(Avg("hum", output_field=FloatField())),max = Max("hum"),min = Min("hum"))
@@ -135,7 +135,7 @@ def select_data_list(request):
         filter_params  = filter_params.urlencode
     except BaseException as e:
         filter_params = None
-        print("Error!",e)
+        #print("Error!",e)
     context["other_params"] = filter_params
     return render(request,"projectApp/select_data_list.html",context)
 
@@ -151,7 +151,7 @@ def log_list(request):
     if "id" in request.GET:
         warning = Warning.objects.filter(id = int(request.GET["id"]))[0]
         if "check" in request.GET:
-            print("check")
+            #print("check")
             warning.status = True
             warning.save()
             return redirect(request.path+"?id={}".format(int(request.GET["id"])))
@@ -193,7 +193,6 @@ def add_event(request):
         tot_events.append(this_event)
     context = {"entrys":tot_events}
     if "id" in request.GET:
-        print("check")
         try:
             event_id = Event.objects.filter(id = int(request.GET["id"]))[0]
             ans = {
@@ -263,7 +262,7 @@ def add_event(request):
             context["formQ"] = formQ
             return render(request,"projectApp/event_list.html",context)
         except Exception as e:
-            print("Error",e)
+            pass
     context["type"] = "success"
     form = EventForm(prefix="add")
     formQ = EventQuery(prefix="query")
@@ -276,7 +275,6 @@ def add_event(request):
                     form = EventForm(request.POST,prefix="add")
                     form.fields['loc'].choices = locations
                     if form.is_valid():
-                        print("form check")
                         loc = form.cleaned_data['loc']
                         begin_time = form.cleaned_data.get("begin_time")
                         end_time = form.cleaned_data.get("end_time")
@@ -288,8 +286,6 @@ def add_event(request):
                         event.loc = loc
                         event = form.save()
                         return redirect(request.path)
-                    else:
-                        print("check form",form)
                 if request.POST["form_type"] == "query":
                     formQ = EventQuery(request.POST,prefix="query")
                     formQ.fields['loc'].choices = locations
@@ -334,7 +330,7 @@ def add_event(request):
                             tot_events.append(this_event)
                         context = {"entrys":tot_events}
         except Exception as e:
-            print("Error at add_event!",e)
+            #print("Error at add_event!",e)
             context["type"] = "fail"
             context["error_message"] = e
     else:

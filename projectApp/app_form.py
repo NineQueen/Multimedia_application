@@ -74,7 +74,6 @@ class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ['begin_time', 'end_time', 'Description',"name","instructor"]
-        # �Զ�������ֶε�С�����ͱ�ǩ
         widgets = {
             'begin_time': forms.DateTimeInput(
                 attrs={
