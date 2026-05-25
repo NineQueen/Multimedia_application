@@ -1,0 +1,158 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'warning.ico' %}" type="image/x-icon">
+    <title>Warning Summary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 min-h-screen text-slate-100">
+    <a href="/" class="fixed top-6 left-6 w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white shadow-lg transition-all" title="Home">
+        <i class="fas fa-home text-xl"></i>
+    </a>
+
+    <header class="bg-gradient-to-r from-blue-700 to-indigo-800 py-10 shadow-xl">
+        <div class="max-w-7xl mx-auto px-6">
+            <h1 class="text-4xl font-bold flex items-center gap-3">
+                <i class="fa-solid fa-chart-pie"></i>
+                Warning Summary
+            </h1>
+            <p class="text-blue-100 mt-2">Overview of warning logs and recent abnormal classroom environment messages.</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white text-slate-800 rounded-2xl p-6 shadow-lg">
+                <div class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Total Warnings</div>
+                <div class="text-4xl font-bold mt-3">{{ total_warnings }}</div>
+            </div>
+            <div class="bg-white text-slate-800 rounded-2xl p-6 shadow-lg">
+                <div class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Unchecked Warnings</div>
+                <div class="text-4xl font-bold mt-3 text-red-600">{{ unchecked_warnings }}</div>
+            </div>
+            <div class="bg-white text-slate-800 rounded-2xl p-6 shadow-lg">
+                <div class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Checked Warnings</div>
+                <div class="text-4xl font-bold mt-3 text-green-600">{{ checked_warnings }}</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <section class="bg-white text-slate-800 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-blue-600"></i>
+                        Warning Count by Location
+                    </h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Location</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Warning Count</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            {% for item in warning_by_location %}
+                            <tr>
+                                <td class="px-4 py-3 font-medium">{{ item.loc }}</td>
+                                <td class="px-4 py-3">{{ item.warning_count }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="px-4 py-6 text-center text-slate-500">No warning records found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="bg-white text-slate-800 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-orange-500"></i>
+                        Recent Warnings
+                    </h2>
+                    <a href="/log" class="text-sm text-blue-600 hover:underline">Open Data Log</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Time</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Location</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Messages</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            {% for warning in recent_warnings %}
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap">{{ warning.date_created|date:"Y-m-d H:i" }}</td>
+                                <td class="px-4 py-3 font-medium">{{ warning.loc }}</td>
+                                <td class="px-4 py-3">
+                                    {% if warning.status %}
+                                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Checked</span>
+                                    {% else %}
+                                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">Unchecked</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3">{{ warning.message.count }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="px-4 py-6 text-center text-slate-500">No warning records found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <section class="bg-white text-slate-800 rounded-2xl p-6 shadow-lg mt-8">
+            <h2 class="text-xl font-semibold flex items-center gap-2 mb-4">
+                <i class="fa-solid fa-message text-indigo-600"></i>
+                Recent Warning Messages
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Time</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Location</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Temperature</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Humidity</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Light</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Sound</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Message</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                        {% for message in recent_messages %}
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap">{{ message.information.date_created|date:"Y-m-d H:i" }}</td>
+                            <td class="px-4 py-3 font-medium">{{ message.information.loc }}</td>
+                            <td class="px-4 py-3">{{ message.information.temp }} °C</td>
+                            <td class="px-4 py-3">{{ message.information.hum }} %</td>
+                            <td class="px-4 py-3">{{ message.information.light }} %</td>
+                            <td class="px-4 py-3">{{ message.information.snd }} dB</td>
+                            <td class="px-4 py-3">{{ message.message|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="px-4 py-6 text-center text-slate-500">No warning messages found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

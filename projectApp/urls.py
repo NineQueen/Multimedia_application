@@ -10,5 +10,6 @@ urlpatterns = [
     path('api/events/', EventApiView.as_view(), name='event_api'),
     path('map/', views.show_map, name='map-view'),
     path('map/image/', views.get_map_image, name='map-image'),
-    path("log",views.log_list)
+    path("log", views.log_list),
+    path("warning-summary", views.warning_summary, name="warning_summary"),
 ]
