@@ -1,4 +1,4 @@
-# [Multimedia Application](http://zhuhao.xin) (View Online)
+# [Multimedia Application](http://zhuhao.xin) (Link Failed Now)
 
 This is the **multimedia application** developed by Group 9 TRN-A 2025/6/13
 
