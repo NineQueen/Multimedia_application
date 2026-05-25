@@ -351,24 +351,30 @@ def check_empty(loc,time):
     return event
 
 def navigation_page(request):
-    warning = Warning.objects.filter(status = False)
-    warning_tag = len(warning)
-    all_result = get_series_data()
+    """Render the home page with navigation cards and a quick system overview."""
+    unchecked_warning_count = Warning.objects.filter(status=False).count()
+    data_count = Information.objects.count()
+    latest_update = Information.objects.order_by("-date_created").first()
+
     location = Information.objects.values_list("loc").distinct().order_by("loc")
     locations = []
     for i in location:
+        loc_name = i[0]
         time = timezone.now()
-        event = check_empty(i[0],time)
-        empty = False
-        if len(event) == 0:
-            empty = True
+        event = check_empty(loc_name, time)
+        latest_env = Information.objects.filter(loc=loc_name).order_by("-date_created").first()
+
+        if latest_env is None:
+            continue
+
         context = {
-            "env" : Information.objects.filter(loc = i[0]).order_by("-date_created")[0],
-            "empty": empty,
+            "env": latest_env,
+            "empty": not event.exists(),
         }
-        if not empty:
+        if event.exists():
             context["detail"] = event[0]
         locations.append(context)
+
     tot_temp = 0
     tot_hum = 0
     tot_snd = 0
@@ -378,22 +384,30 @@ def navigation_page(request):
         tot_snd += i["env"].snd
         tot_hum += i["env"].hum
         tot_temp += i["env"].temp
-    tot_light /= len(locations)
-    tot_snd /= len(locations)
-    tot_hum /= len(locations)
-    tot_temp /= len(locations)
-    tot_light = "{:.2f}".format(tot_light)
-    tot_snd = "{:.2f}".format(tot_snd)
-    tot_temp = "{:.2f}".format(tot_temp)
-    tot_hum = "{:.2f}".format(tot_hum)
+
+    if locations:
+        tot_light = "{:.2f}".format(tot_light / len(locations))
+        tot_snd = "{:.2f}".format(tot_snd / len(locations))
+        tot_temp = "{:.2f}".format(tot_temp / len(locations))
+        tot_hum = "{:.2f}".format(tot_hum / len(locations))
+    else:
+        tot_light = tot_snd = tot_temp = tot_hum = "0.00"
+
     all_result = {
-        "temp" : tot_temp,
-        "hum":tot_hum,
-        "light":tot_light,
-        "snd" : tot_snd,
+        "temp": tot_temp,
+        "hum": tot_hum,
+        "light": tot_light,
+        "snd": tot_snd,
     }
-    context = {"all":all_result,"locs":locations,"check":warning_tag}
-    return render(request,"index.html",context)
+    context = {
+        "all": all_result,
+        "locs": locations,
+        "check": unchecked_warning_count,
+        "classroom_count": len(locations),
+        "data_count": data_count,
+        "latest_update": latest_update,
+    }
+    return render(request, "index.html", context)
 
 def environmental_monitoring_v3(request):
     """

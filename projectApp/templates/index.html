@@ -5,22 +5,22 @@
     <link rel="icon" href="{% static 'navi_icon.ico' %}" type="image/x-icon" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Classroom environment monitoring system</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
-      a {
-        text-decoration: none;
-        color: inherit;
-      }
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
       }
 
       body {
@@ -37,8 +37,8 @@
 
       header {
         text-align: center;
-        padding: 30px 0;
-        margin-bottom: 30px;
+        padding: 28px 0 20px;
+        margin-bottom: 20px;
       }
 
       .logo {
@@ -53,10 +53,7 @@
         margin-right: 15px;
         color: #4bcffa;
       }
-      a {
-        text-decoration: none;
-        color: inherit;
-      }
+
       h1 {
         font-size: 2.8rem;
         margin-bottom: 10px;
@@ -67,55 +64,217 @@
       }
 
       .subtitle {
-        font-size: 1.2rem;
+        font-size: 1.15rem;
         opacity: 0.9;
-        max-width: 700px;
+        max-width: 760px;
         margin: 0 auto;
         line-height: 1.6;
       }
 
-      .dashboard {
+      .overview-panel {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 25px;
-        margin-bottom: 40px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
       }
 
-      .card {
+      .overview-card {
+        background: rgba(255, 255, 255, 0.11);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur(10px);
+      }
+
+      .overview-label {
+        font-size: 0.9rem;
+        opacity: 0.74;
+        margin-bottom: 8px;
+      }
+
+      .overview-value {
+        font-size: 1.75rem;
+        font-weight: 750;
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+      }
+
+      .overview-unit {
+        font-size: 0.85rem;
+        font-weight: 500;
+        opacity: 0.72;
+      }
+
+      .section-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 28px 0 16px;
+      }
+
+      .section-title {
+        font-size: 1.65rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .section-title i {
+        color: #4bcffa;
+      }
+
+      .section-note {
+        font-size: 0.95rem;
+        opacity: 0.75;
+      }
+
+      .module-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+        margin-bottom: 34px;
+      }
+
+      .module-card,
+      .sensor-card,
+      .classroom-list,
+      .classroom-card {
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
-        border-radius: 15px;
-        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
       }
 
-      .card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        background: rgba(255, 255, 255, 0.15);
+      .module-card {
+        min-height: 112px;
+        border-radius: 18px;
+        padding: 22px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+      }
+
+      .module-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 38px rgba(0, 0, 0, 0.32);
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      .module-icon {
+        flex-shrink: 0;
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.7rem;
+      }
+
+      .module-content {
+        min-width: 0;
+      }
+
+      .module-title {
+        font-size: 1.32rem;
+        font-weight: 700;
+        line-height: 1.3;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .module-desc {
+        margin-top: 6px;
+        font-size: 0.92rem;
+        opacity: 0.75;
+        line-height: 1.35;
+      }
+
+      .module-events .module-icon {
+        background: linear-gradient(135deg, #f6d365, #fda085);
+      }
+
+      .module-data .module-icon {
+        background: linear-gradient(135deg, #e0c3fc, #b5b6fb);
+      }
+
+      .module-dashboard .module-icon {
+        background: linear-gradient(135deg, #84fab0, #8fd3f4);
+      }
+
+      .module-warning .module-icon {
+        background: linear-gradient(135deg, #ffecd2, #fcb69f);
+      }
+
+      .module-log .module-icon {
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      }
+
+      .module-summary .module-icon {
+        background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      }
+
+      .new-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 7px;
+        background-color: #00d5ff;
+        color: white;
+        font-size: 12px;
+        border-radius: 999px;
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+      }
+
+      .sensor-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 20px;
+        margin-bottom: 34px;
+      }
+
+      .sensor-card {
+        border-radius: 18px;
+        padding: 24px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        min-height: 245px;
+      }
+
+      .sensor-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 38px rgba(0, 0, 0, 0.32);
+        background: rgba(255, 255, 255, 0.16);
       }
 
       .card-header {
         display: flex;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 14px;
       }
 
       .card-icon {
         flex-shrink: 0;
-        width: 60px;
-        height: 60px;
+        width: 56px;
+        height: 56px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 15px;
-        font-size: 1.8rem;
+        margin-right: 14px;
+        font-size: 1.65rem;
       }
 
       .temp .card-icon {
@@ -134,46 +293,37 @@
         background: linear-gradient(135deg, #84fab0, #8fd3f4);
       }
 
-      .addEvent .card-icon {
-        background: linear-gradient(135deg, #f6d365, #fda085);
-      }
-      .dataList .card-icon {
-        background: linear-gradient(135deg, #e0c3fc, #b5b6fb);
-      }
-      .dataMonitor .card-icon {
-        background: linear-gradient(135deg, #ffecd2, #fcb69f);
-      }
       .card-title {
-        font-size: 1.5rem;
-        font-weight: 600;
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.3;
       }
 
       .card-value {
-        font-size: 2.8rem;
-        font-weight: 700;
+        font-size: 2.55rem;
+        font-weight: 800;
         margin: 10px 0;
         text-align: center;
       }
 
       .card-unit {
-        font-size: 1.2rem;
-        opacity: 0.8;
+        font-size: 1.05rem;
+        opacity: 0.78;
         margin-left: 5px;
       }
 
       .card-status {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        padding: 5px 15px;
+        padding: 5px 14px;
         border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-top: 10px;
-        align-self: flex-start;
+        font-size: 0.86rem;
+        font-weight: 700;
+        margin-top: 6px;
       }
 
       .status-normal {
-        background: rgba(161, 221, 185, 0.938);
+        background: rgba(161, 221, 185, 0.94);
         color: #1e8548;
       }
 
@@ -188,52 +338,62 @@
       }
 
       .card-description {
-        margin-top: 15px;
-        font-size: 0.95rem;
-        line-height: 1.6;
-        opacity: 0.85;
+        margin-top: 14px;
+        font-size: 0.93rem;
+        line-height: 1.55;
+        opacity: 0.82;
       }
 
       .classroom-list {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-radius: 15px;
-        padding: 25px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        margin-top: 30px;
-      }
-      .section-title {
-        font-size: 1.8rem;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
+        border-radius: 18px;
+        padding: 24px;
+        margin-top: 28px;
       }
 
-      .section-title i {
-        margin-right: 10px;
-        color: #4bcffa;
+      .classroom-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .map-button {
+        background: rgba(255, 255, 255, 0.12);
+        padding: 9px 16px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+      }
+
+      .map-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
       }
 
       .classrooms {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
+        gap: 18px;
       }
 
       .classroom-card {
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
+        border-radius: 14px;
         padding: 20px;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
+        cursor: pointer;
       }
 
       .classroom-card:hover {
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.16);
+        transform: translateY(-3px);
       }
 
       .classroom-name {
-        font-size: 1.3rem;
+        font-size: 1.25rem;
         margin-bottom: 15px;
         display: flex;
         align-items: center;
@@ -245,27 +405,28 @@
       }
 
       .classroom-metrics {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
       }
 
       .metric {
         display: flex;
         flex-direction: column;
         align-items: center;
-        min-width: 70px;
+        justify-content: center;
+        min-height: 58px;
       }
 
       .metric-value {
-        font-size: 1.3rem;
-        font-weight: 600;
+        font-size: 1.12rem;
+        font-weight: 700;
         margin-bottom: 5px;
       }
 
       .metric-label {
-        font-size: 0.85rem;
-        opacity: 0.7;
+        font-size: 0.82rem;
+        opacity: 0.68;
       }
 
       footer {
@@ -277,49 +438,40 @@
         opacity: 0.8;
       }
 
-      @media (max-width: 768px) {
+      @media (max-width: 1024px) {
+        .overview-panel,
+        .sensor-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .module-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 680px) {
+        body {
+          padding: 14px;
+        }
+
         h1 {
-          font-size: 2.2rem;
+          font-size: 2.05rem;
         }
 
         .subtitle {
-          font-size: 1rem;
+          font-size: 0.98rem;
         }
 
-        .dashboard {
+        .overview-panel,
+        .module-grid,
+        .sensor-grid {
           grid-template-columns: 1fr;
         }
-      }
-      .toolbar {
-        justify-content: center;
-      }
-      .has-new {
-        background-color: #fffbe6;
-        border-left: 4px solid #faad14;
-        transition: all 0.3s;
-      }
 
-      .new-badge {
-        display: inline-block;
-        background-color: #00ffea91;
-        color: white;
-        font-size: 12px;
-        padding: 2px 6px;
-        border-radius: 12px;
-        margin-left: 8px;
-        vertical-align: middle;
-        animation: pulse 1.5s infinite;
-      }
-
-      @keyframes pulse {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.1);
-        }
-        100% {
-          transform: scale(1);
+        .classroom-header,
+        .section-bar {
+          flex-direction: column;
+          align-items: flex-start;
         }
       }
     </style>
@@ -332,331 +484,281 @@
           <h1>Environmental monitoring system</h1>
         </div>
         <p class="subtitle">
-          Monitor the temperature, humidity, sound and light intensity of each
-          classroom in real time to provide the best learning environment for
-          teachers and students
+          Monitor classroom temperature, humidity, sound and light intensity in
+          real time to support a comfortable learning environment.
         </p>
       </header>
-      <div class="dashboard">
-        <a href="eventlist">
-          <div class="card addEvent toolbar">
-            <div class="card-header">
-              <div class="card-icon">
-                <i class="fa-solid fa-calendar-days"></i>
-              </div>
-              <h2 class="card-title">Events</h2>
-            </div>
-          </div>
-        </a>
-        <a href="selectdata">
-          <div class="card dataList toolbar">
-            <div class="card-header">
-              <div class="card-icon">
-                <i class="fa-solid fa-database"></i>
-              </div>
-              <h2 class="card-title">Data List</h2>
-            </div>
-          </div>
-        </a>
-        <a href="monitor">
-          <div class="card dataMonitor toolbar">
-            <div class="card-header">
-              <div class="card-icon">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-              </div>
-              <h2 class="card-title">Data Warning</h2>
-            </div>
-          </div>
-        </a>
-        <a href="log">
-          <div class="card temp toolbar">
-            <div class="card-header">
-                <div class="card-icon">
-                    <i class="fa-solid fa-list"></i>
-                </div>
-                {% if check > 0 %}
-                <h2 class="card-title">Data Log <span class="new-badge">{{check}}</span></h2>
-                {% else %}
-                <h2 class="card-title">Data Log</h2>
-                {% endif %}
-            </div>
+
+      <section class="overview-panel" aria-label="Quick system overview">
+        <div class="overview-card">
+          <div class="overview-label">Classrooms</div>
+          <div class="overview-value">{{ classroom_count }}<span class="overview-unit">rooms</span></div>
         </div>
-        </a>
-        <a href="warning-summary">
-          <div class="card humidity toolbar">
-            <div class="card-header">
-              <div class="card-icon">
-                <i class="fa-solid fa-chart-pie"></i>
-              </div>
-              <h2 class="card-title">Warning Summary</h2>
-            </div>
+        <div class="overview-card">
+          <div class="overview-label">Sensor Records</div>
+          <div class="overview-value">{{ data_count }}<span class="overview-unit">rows</span></div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">Unchecked Warnings</div>
+          <div class="overview-value">{{ check }}<span class="overview-unit">items</span></div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-label">Latest Update</div>
+          <div class="overview-value">
+            {% if latest_update %}
+              {{ latest_update.date_created|date:"m-d H:i" }}
+            {% else %}
+              --
+            {% endif %}
           </div>
-        </a>
+        </div>
+      </section>
+
+      <div class="section-bar">
+        <h2 class="section-title"><i class="fas fa-layer-group"></i> Function Modules</h2>
+        <p class="section-note">Fast access to data, warning and dashboard pages</p>
       </div>
-      <a href="dashboard/classroom">
-        <div class="dashboard">
-          <div class="card temp">
-            <div class="card-header">
-              <div class="card-icon">
-                <i class="fas fa-thermometer-half"></i>
-              </div>
-              <h2 class="card-title">Temperature Monitoring</h2>
-            </div>
-            <div class="card-value">
-              {{all.temp}}<span class="card-unit">°C</span>
-            </div>
-            <span class="card-status status-normal temp-status"
-              >Normal Range</span
-            >
-            <p class="card-description">
-              Monitor the temperature conditions in each classroom to ensure a
-              comfortable learning range (20°C-26°C).
-            </p>
-          </div>
 
-          <div class="card humidity">
-            <div class="card-header">
-              <div class="card-icon">
-                <i class="fas fa-tint"></i>
-              </div>
-              <h2 class="card-title">Humidity Monitoring</h2>
-            </div>
-            <div class="card-value">
-              {{all.hum}}<span class="card-unit">%</span>
-            </div>
-            <span class="card-status status-normal hum-status"
-              >Ideal humidity</span
-            >
-            <p class="card-description">
-              Keep the humidity in the classroom between 40% and 60% to create
-              the best learning environment and prevent the air from being too
-              dry or too humid.
-            </p>
+      <nav class="module-grid" aria-label="Function modules">
+        <a href="eventlist" class="module-card module-events">
+          <div class="module-icon"><i class="fa-solid fa-calendar-days"></i></div>
+          <div class="module-content">
+            <h2 class="module-title">Events</h2>
+            <p class="module-desc">Manage classroom appointments and schedules.</p>
           </div>
+        </a>
 
-          <div class="card sound">
-            <div class="card-header">
-              <div class="card-icon">
-                <i class="fas fa-volume-up"></i>
-              </div>
-              <h2 class="card-title">Sound Monitoring</h2>
-            </div>
-            <div class="card-value">
-              {{all.snd}}<span class="card-unit">dB</span>
-            </div>
-            <span class="card-status status-warning snd-status"
-              >Slightly Higher</span
-            >
-            <p class="card-description">
-              Monitor the noise level in the classroom environment. The ideal
-              learning environment should be below 60 decibels.
-            </p>
+        <a href="selectdata" class="module-card module-data">
+          <div class="module-icon"><i class="fa-solid fa-database"></i></div>
+          <div class="module-content">
+            <h2 class="module-title">Data List</h2>
+            <p class="module-desc">Search and inspect sensor records.</p>
           </div>
+        </a>
 
-          <div class="card light">
-            <div class="card-header">
-              <div class="card-icon">
-                <i class="fas fa-lightbulb"></i>
-              </div>
-              <h2 class="card-title">Light Monitoring</h2>
-            </div>
-            <div class="card-value">
-              {{all.light}}<span class="card-unit">%</span>
-            </div>
-            <span class="card-status status-normal light-status"
-              >Normal Range</span
-            >
-            <p class="card-description">
-              Make sure the lighting in the classroom is normal.
-            </p>
+        <a href="dashboard/classroom" class="module-card module-dashboard">
+          <div class="module-icon"><i class="fa-solid fa-chart-simple"></i></div>
+          <div class="module-content">
+            <h2 class="module-title">Dashboard</h2>
+            <p class="module-desc">View classroom charts and trend analysis.</p>
           </div>
-        </div>
-      </a>
-      <div class="classroom-list">
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-          "
-        >
-          <h2 class="section-title">
-            <i class="fas fa-school"></i>Classroom Environment Status
-          </h2>
-          <a
-            href="map"
-            style="
-              background: rgba(255, 255, 255, 0.1);
-              padding: 8px 15px;
-              border-radius: 20px;
-              display: flex;
-              align-items: center;
-              gap: 8px;
-              transition: all 0.3s ease;
-              color: white;
-              text-decoration: none;
-            "
-          >
-            <i class="fas fa-map"></i> MAP
-          </a>
+        </a>
+
+        <a href="monitor" class="module-card module-warning">
+          <div class="module-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="module-content">
+            <h2 class="module-title">Data Warning</h2>
+            <p class="module-desc">Check recent abnormal environmental readings.</p>
+          </div>
+        </a>
+
+        <a href="log" class="module-card module-log">
+          <div class="module-icon"><i class="fa-solid fa-list"></i></div>
+          <div class="module-content">
+            <h2 class="module-title">
+              Data Log
+              {% if check > 0 %}<span class="new-badge">{{ check }}</span>{% endif %}
+            </h2>
+            <p class="module-desc">Review warning logs and processing status.</p>
+          </div>
+        </a>
+
+        <a href="warning-summary" class="module-card module-summary">
+          <div class="module-icon"><i class="fa-solid fa-chart-pie"></i></div>
+          <div class="module-content">
+            <h2 class="module-title">Warning Summary</h2>
+            <p class="module-desc">Summarize warnings by status and location.</p>
+          </div>
+        </a>
+      </nav>
+
+      <div class="section-bar">
+        <h2 class="section-title"><i class="fas fa-gauge-high"></i> Environment Overview</h2>
+        <p class="section-note">Average values across current classrooms</p>
+      </div>
+
+      <section class="sensor-grid">
+        <a href="dashboard/classroom" class="sensor-card temp">
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-thermometer-half"></i></div>
+            <h2 class="card-title">Temperature Monitoring</h2>
+          </div>
+          <div class="card-value">{{ all.temp }}<span class="card-unit">°C</span></div>
+          <span class="card-status status-normal temp-status">Normal Range</span>
+          <p class="card-description">Monitor classroom temperature and keep it within a comfortable range.</p>
+        </a>
+
+        <a href="dashboard/classroom" class="sensor-card humidity">
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-tint"></i></div>
+            <h2 class="card-title">Humidity Monitoring</h2>
+          </div>
+          <div class="card-value">{{ all.hum }}<span class="card-unit">%</span></div>
+          <span class="card-status status-normal hum-status">Ideal Humidity</span>
+          <p class="card-description">Track humidity conditions to avoid overly dry or humid classrooms.</p>
+        </a>
+
+        <a href="dashboard/classroom" class="sensor-card sound">
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-volume-up"></i></div>
+            <h2 class="card-title">Sound Monitoring</h2>
+          </div>
+          <div class="card-value">{{ all.snd }}<span class="card-unit">dB</span></div>
+          <span class="card-status status-warning snd-status">Slightly Higher</span>
+          <p class="card-description">Monitor noise levels and identify classrooms that may affect learning.</p>
+        </a>
+
+        <a href="dashboard/classroom" class="sensor-card light">
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-lightbulb"></i></div>
+            <h2 class="card-title">Light Monitoring</h2>
+          </div>
+          <div class="card-value">{{ all.light }}<span class="card-unit">%</span></div>
+          <span class="card-status status-normal light-status">Normal Range</span>
+          <p class="card-description">Check whether the classroom lighting is suitable for teaching activities.</p>
+        </a>
+      </section>
+
+      <section class="classroom-list">
+        <div class="classroom-header">
+          <h2 class="section-title"><i class="fas fa-school"></i> Classroom Environment Status</h2>
+          <a href="map" class="map-button"><i class="fas fa-map"></i> MAP</a>
         </div>
 
         <div class="classrooms">
-          {% for i in locs%}
-          <div
-            class="classroom-card"
-            data-loc="{{i.env.loc}}"
-            style="margin: auto; cursor: pointer"
-          >
-            <h3 class="classroom-name">
-              <i class="fas fa-chalkboard"></i>{{i.env.loc}}
-            </h3>
+          {% for i in locs %}
+          <div class="classroom-card" data-loc="{{ i.env.loc }}">
+            <h3 class="classroom-name"><i class="fas fa-chalkboard"></i>{{ i.env.loc }}</h3>
             <div class="classroom-metrics">
-              <div class="metric" style="margin: auto">
-                <div class="metric-value">{{i.env.temp}}°C</div>
+              <div class="metric">
+                <div class="metric-value">{{ i.env.temp }}°C</div>
                 <div class="metric-label">Temp</div>
               </div>
-              <div class="metric" style="margin: auto">
-                <div class="metric-value">{{i.env.hum}}%</div>
+              <div class="metric">
+                <div class="metric-value">{{ i.env.hum }}%</div>
                 <div class="metric-label">Humidity</div>
               </div>
-              <div class="metric" style="margin: auto">
-                <div class="metric-value">{{i.env.snd}}dB</div>
+              <div class="metric">
+                <div class="metric-value">{{ i.env.snd }}dB</div>
                 <div class="metric-label">Sound</div>
               </div>
-              <div class="metric" style="margin: auto">
-                <div class="metric-value">{{i.env.light}}</div>
+              <div class="metric">
+                <div class="metric-value">{{ i.env.light }}</div>
                 <div class="metric-label">Light</div>
               </div>
               {% if i.empty == True %}
-              <div class="metric" style="margin: auto">
-                <div
-                  class="metric-value"
-                  style="color: rgb(120, 228, 120); font-size: 15px"
-                >
-                  Empty
-                </div>
+              <div class="metric">
+                <div class="metric-value" style="color: rgb(120, 228, 120); font-size: 15px">Empty</div>
                 <div class="metric-label">Status</div>
               </div>
               {% else %}
-              <div
-                class="metric clickable-row"
-                style="margin: auto; cursor: pointer"
-                data-id="{{ i.detail.id }}"
-              >
-                <div
-                  class="metric-value"
-                  style="color: rgb(231, 97, 97); font-size: 17px"
-                >
-                  {{i.detail.name}}
-                </div>
+              <div class="metric clickable-row" data-id="{{ i.detail.id }}">
+                <div class="metric-value" style="color: rgb(231, 97, 97); font-size: 17px">{{ i.detail.name }}</div>
                 <div class="metric-label">Status</div>
               </div>
               {% endif %}
-              <div class="metric" style="margin: auto">
-                <div class="metric-value" style="font-size: 14px">
-                  {{i.env.date_created | date:"m-d H:i"}}
-                </div>
+              <div class="metric">
+                <div class="metric-value" style="font-size: 14px">{{ i.env.date_created|date:"m-d H:i" }}</div>
                 <div class="metric-label">Update</div>
               </div>
             </div>
           </div>
+          {% empty %}
+          <div class="classroom-card">
+            <h3 class="classroom-name"><i class="fas fa-circle-info"></i>No classroom data</h3>
+            <p class="card-description">No sensor records are available in the current database.</p>
+          </div>
           {% endfor %}
         </div>
-      </div>
+      </section>
 
       <footer>
-        <p>
-          Classroom environment monitoring system &copy; 2025 | Real-time data
-          update | By Group A09
-        </p>
+        <p>Classroom environment monitoring system &copy; 2025 | Real-time data update | By Group A09</p>
       </footer>
     </div>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.classroom-card').forEach(card => {
-            card.addEventListener('click', () => {
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".classroom-card[data-loc]").forEach((card) => {
+          card.addEventListener("click", () => {
             const loc = card.dataset.loc;
-          window.location.href = `dashboard/classroom?loc=${loc}`;
-        });
-      });
-          document.querySelectorAll('.clickable-row').forEach(div => {
-              div.addEventListener('click', function(event) {
-                  console.log("check");
-                  event.stopPropagation(); // 阻止冒泡
-                  const eventId = this.getAttribute('data-id');
-                  if (eventId) {
-                      window.location.href = `/eventlist?id=${eventId}`;
-                  }
-              });
+            window.location.href = `dashboard/classroom?loc=${loc}`;
           });
-      });
-            function updata_data(){
-             // Temperature
-                 document.querySelectorAll('.temp-status').forEach(status => {
-                     const all_temp = {{all.temp}};
-                     console.log({{all.temp}});
-                     if (all_temp>30) {
-                         status.className = 'card-status status-warning';
-                         status.textContent = 'Hot';
-                     } else if(all_temp< 18){
-                         status.className = 'card-status status-low';
-                         status.textContent = 'Cold';
-                     }else{
-                          status.className = 'card-status status-normal';
-                         status.textContent = 'Normal';
-                     }
-                 });
-                 //Hum
-                 document.querySelectorAll('.hum-status').forEach(status => {
-                     const all_temp = {{all.hum}};
-                     if (all_temp>80) {
-                         status.className = 'card-status status-warning';
-                         status.textContent = 'High';
-                     } else if(all_temp< 30){
-                         status.className = 'card-status status-low';
-                         status.textContent = 'Low';
-                     }else{
-                          status.className = 'card-status status-normal';
-                         status.textContent = 'Optimal';
-                     }
-                 });
-                 document.querySelectorAll('.snd-status').forEach(status => {
-                     const all_temp = {{all.snd}};
-                     if (all_temp>70) {
-                         status.className = 'card-status status-warning';
-                         status.textContent = 'Loud';
-                     } else if(all_temp< 50){
-                         status.className = 'card-status status-low';
-                         status.textContent = 'Quiet';
-                     }else{
-                          status.className = 'card-status status-normal';
-                         status.textContent = 'Moderate';
-                     }
-                 });
-                 document.querySelectorAll('.light-status').forEach(status => {
-                     const all_temp = {{all.light}};
-                     if (all_temp>90) {
-                         status.className = 'card-status status-warning';
-                         status.textContent = 'Bright';
-                     } else if(all_temp< 30){
-                         status.className = 'card-status status-low';
-                         status.textContent = 'Off';
-                     }else{
-                          status.className = 'card-status status-normal';
-                         status.textContent = 'Moderate';
-                     }
-                 });
+        });
+
+        document.querySelectorAll(".clickable-row").forEach((div) => {
+          div.addEventListener("click", function (event) {
+            event.stopPropagation();
+            const eventId = this.getAttribute("data-id");
+            if (eventId) {
+              window.location.href = `/eventlist?id=${eventId}`;
             }
-            updata_data();
-            window.onload = function(){
-                 setTimeout(function(){
-                     console.log("refresh")
-                     location.reload();
-                 },60000)
-            };
+          });
+        });
+
+        function updateStatus() {
+          document.querySelectorAll(".temp-status").forEach((status) => {
+            const value = Number("{{ all.temp }}");
+            if (value > 30) {
+              status.className = "card-status status-warning temp-status";
+              status.textContent = "Hot";
+            } else if (value < 18) {
+              status.className = "card-status status-low temp-status";
+              status.textContent = "Cold";
+            } else {
+              status.className = "card-status status-normal temp-status";
+              status.textContent = "Normal";
+            }
+          });
+
+          document.querySelectorAll(".hum-status").forEach((status) => {
+            const value = Number("{{ all.hum }}");
+            if (value > 80) {
+              status.className = "card-status status-warning hum-status";
+              status.textContent = "High";
+            } else if (value < 30) {
+              status.className = "card-status status-low hum-status";
+              status.textContent = "Low";
+            } else {
+              status.className = "card-status status-normal hum-status";
+              status.textContent = "Optimal";
+            }
+          });
+
+          document.querySelectorAll(".snd-status").forEach((status) => {
+            const value = Number("{{ all.snd }}");
+            if (value > 70) {
+              status.className = "card-status status-warning snd-status";
+              status.textContent = "Loud";
+            } else if (value < 50) {
+              status.className = "card-status status-low snd-status";
+              status.textContent = "Quiet";
+            } else {
+              status.className = "card-status status-normal snd-status";
+              status.textContent = "Moderate";
+            }
+          });
+
+          document.querySelectorAll(".light-status").forEach((status) => {
+            const value = Number("{{ all.light }}");
+            if (value > 90) {
+              status.className = "card-status status-warning light-status";
+              status.textContent = "Bright";
+            } else if (value < 30) {
+              status.className = "card-status status-low light-status";
+              status.textContent = "Off";
+            } else {
+              status.className = "card-status status-normal light-status";
+              status.textContent = "Moderate";
+            }
+          });
+        }
+
+        updateStatus();
+        setTimeout(function () {
+          location.reload();
+        }, 60000);
+      });
     </script>
   </body>
 </html>
