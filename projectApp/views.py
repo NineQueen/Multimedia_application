@@ -396,11 +396,72 @@ def navigation_page(request):
     return render(request,"index.html",context)
 
 def environmental_monitoring_v3(request):
+    """
+    Display environmental data for alert checking.
+
+    The original page only queried records from the latest 24 hours.
+    When the bundled sample database becomes old, the page will show 0 records.
+    To make the demo usable, this view falls back to the latest historical
+    records and tells the user what data range is being displayed.
+    """
     one_day_ago = timezone.now() - timedelta(days=1)
-    data = Information.objects.filter(date_created__gte = one_day_ago).order_by('-date_created')
+    recent_data = Information.objects.filter(
+        date_created__gte=one_day_ago
+    ).order_by('-date_created')
+
+    is_fallback = False
+    table_title = "Recent 24h Data Records"
+    notice_type = "success"
+    notice_message = "Showing environmental data records from the recent 24 hours."
+
+    if recent_data.exists():
+        data = recent_data
+    else:
+        data = Information.objects.all().order_by('-date_created')[:200]
+        is_fallback = True
+        table_title = "Latest Historical Data Records"
+        notice_type = "warning"
+        notice_message = (
+            "No records were found in the recent 24 hours. "
+            "The page is showing the latest 200 historical records instead."
+        )
+
     return render(request, 'projectApp/env-monitor-v3.html', {
-        'data': data
+        'data': data,
+        'is_fallback': is_fallback,
+        'table_title': table_title,
+        'notice_type': notice_type,
+        'notice_message': notice_message,
     })
+
+
+def warning_summary(request):
+    """Show summary statistics for warning logs."""
+    total_warnings = Warning.objects.count()
+    unchecked_warnings = Warning.objects.filter(status=False).count()
+    checked_warnings = Warning.objects.filter(status=True).count()
+
+    warning_by_location = Warning.objects.values('loc').annotate(
+        warning_count=Count('id')
+    ).order_by('-warning_count', 'loc')
+
+    recent_warnings = Warning.objects.prefetch_related(
+        'message', 'message__information'
+    ).order_by('-date_created')[:10]
+
+    recent_messages = WarningMessage.objects.select_related(
+        'information'
+    ).order_by('-id')[:10]
+
+    context = {
+        'total_warnings': total_warnings,
+        'unchecked_warnings': unchecked_warnings,
+        'checked_warnings': checked_warnings,
+        'warning_by_location': warning_by_location,
+        'recent_warnings': recent_warnings,
+        'recent_messages': recent_messages,
+    }
+    return render(request, 'projectApp/warning_summary.html', context)
 
 class EventApiView(View):
     def get(self, request):
